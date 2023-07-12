@@ -1,6 +1,0 @@
-{
-  "dependencies": {
-    "element-ui": "^2.15.6",
-    "vue-router": "^3.5.3"
-  }
-}
