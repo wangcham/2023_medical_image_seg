@@ -61,7 +61,7 @@ router.beforeEach((to, from, next) => {
     next('/login') // 在这里，您可以指定登录页面的路由路径
   } else {
     // 如果不需要登录或用户已登录，允许访问
-    next()
+    next();
   }
 })
 
