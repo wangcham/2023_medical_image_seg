@@ -21,7 +21,8 @@
           <div class="box">
             <div class="intro">品牌介绍</div>
             <div class="intro">团队介绍</div>
-            <div class="intro">关于我们</div>
+            <router-link to="/AboutView" class="routerLink"><div class="intro">关于我们</div>
+            </router-link>
           </div>
         </div>
         <div class="purple service">
@@ -47,20 +48,24 @@
 
 <script>
 export default {
-  name: "About"
+  name: "About",
+  data() {
+    return {
+    }
+  },
 }
 </script>
 
 <style lang="less" scoped>
 .aboutInfo {
   width: 100%;
-  height: 400px;
+  height: 350px;
   display: flex;
   flex-direction: column;
   background-color: #9a9a9a;
 
   .info {
-    margin: 90px 200px 60px 200px;
+    margin: 60px 200px 60px 200px;
     display: flex;
 
     .left {
@@ -68,7 +73,7 @@ export default {
       width: 300px;
 
       .information {
-        margin-top: 60px;
+        margin-top: 35px;
         padding-left: 55px;
         text-align: left;
 
@@ -125,7 +130,15 @@ export default {
       margin-right: 20px;
     }
   }
-
+  .bar:hover {
+    cursor: pointer;
+  }
+  .right:hover {
+    cursor: pointer;
+  }
+  .routerLink {
+    text-decoration: none;
+  }
 }
 
 </style>
