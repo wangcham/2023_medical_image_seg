@@ -1,20 +1,16 @@
 <template>
-
+  
 </template>
+<script lang="ts">
+import { defineComponent } from 'vue'
 
-<script>
-export default {
-  name: "Login",
-  data() {
-    return {
-    }
+export default defineComponent({
+  name: 'Login',
+  setup() {
+    return {}
   },
-  methods:{
-    // 记得localStorage存一下登录状态
-  }
-}
+})
 </script>
-
 <style lang="less" scoped>
 
 </style>

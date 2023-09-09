@@ -56,10 +56,12 @@
         </el-col>
         <el-col :span="3">
           <button class="our">
-            <a href="#bottom"><text>联系我们</text></a>
-            <el-icon class="ourIcon">
-              <Right/>
-            </el-icon>
+            <a href="#bottom">
+              <text>联系我们</text>
+              <el-icon class="ourIcon">
+                <Right/>
+              </el-icon>
+            </a>
           </button>
         </el-col>
       </el-row>
@@ -87,12 +89,12 @@
             <p class="productIntroInfo">{{ SecondInfo }}</p>
           </div>
           <div class="rightTwo">
-            <img src="../assets/challenge.jpeg" alt=""  class="productImg">
+            <img src="../assets/challenge.jpeg" alt="" class="productImg">
           </div>
         </div>
         <div class="third">
           <div class="leftThree">
-            <img src="../assets/trend.jpg" alt=""  class="productImg">
+            <img src="../assets/trend.jpg" alt="" class="productImg">
           </div>
           <div class="rightThree">
             <h3 class="productIntroTitle">{{ ThirdTitle }}</h3>
@@ -137,6 +139,7 @@
     </div>
     <a name="bottom"></a>
     <contact-u-s/>
+    <el-backtop :right="100" :bottom="50" />
   </el-scrollbar>
 </template>
 
@@ -144,19 +147,19 @@
 import {defineComponent} from "vue";
 import ContactUS from "@/components/ContactUs.vue";
 
-const loginName = "xx医生";
-const FirstTitle = "医学图像分割特色";
-const SecondTitle = "医疗影响诊断的挑战";
-const ThirdTitle = "数据驱动医疗趋势";
-const FirstInfo = "本产品专注于医学图像的分割为特色功能，面向医院、医生和病人三方进行医学图像的提取、分割以及图像呈现的功能，并且为病人提供答疑解惑，为医生提供经典案例记录、学习的功能。";
-const SecondInfo = "医学影像诊断是医疗过程中的关键环节，然而，人工解读医学影像存在主观性和时间成本较高的问题。通过自动化的图像处理和准确的分割算法。可以提供一种快速、客观且高效的医学影像诊断辅助工具，有助于克服这些挑战。";
-const ThirdInfo = "随着医疗数据的不断积累和数字化转型，数据驱动的医疗趋势日益增强。智慧医疗平台能够处理和分析大规模的医学影像数据，并为医学研究和临床决策提供宝贵的数据支持。这对于医学研究人员、医生和医疗机构来说，具有重要的价值和意义。";
 export default defineComponent({
   name: "HomeView",
   components: {
     ContactUS
   },
-  data() {
+  setup() {
+    const loginName = "xx医生";
+    const FirstTitle = "医学图像分割特色";
+    const SecondTitle = "医疗影响诊断的挑战";
+    const ThirdTitle = "数据驱动医疗趋势";
+    const FirstInfo = "本产品专注于医学图像的分割为特色功能，面向医院、医生和病人三方进行医学图像的提取、分割以及图像呈现的功能，并且为病人提供答疑解惑，为医生提供经典案例记录、学习的功能。";
+    const SecondInfo = "医学影像诊断是医疗过程中的关键环节，然而，人工解读医学影像存在主观性和时间成本较高的问题。通过自动化的图像处理和准确的分割算法。可以提供一种快速、客观且高效的医学影像诊断辅助工具，有助于克服这些挑战。";
+    const ThirdInfo = "随着医疗数据的不断积累和数字化转型，数据驱动的医疗趋势日益增强。智慧医疗平台能够处理和分析大规模的医学影像数据，并为医学研究和临床决策提供宝贵的数据支持。这对于医学研究人员、医生和医疗机构来说，具有重要的价值和意义。";
     return {
       loginName,
       FirstTitle,
@@ -166,7 +169,8 @@ export default defineComponent({
       SecondInfo,
       ThirdInfo,
     }
-  }, methods: {
+  },
+  methods: {
     navigateToLogin() {
       this.$router.push("/login");
     },
@@ -210,10 +214,12 @@ export default defineComponent({
     border-radius: 3px; /* 滑块的圆角 */
   }
 }
-a{
+
+a {
   text-decoration: none; /* 去除下划线 */
   color: inherit; /* 使用继承的颜色，保持文本与父元素的颜色一致 */
 }
+
 // Header
 #header {
   width: 100%;
@@ -335,10 +341,11 @@ a{
   }
 
   .productIntro {
-    .productImg{
+    .productImg {
       width: 100%;
       height: 300px;
     }
+
     .productIntroTitle {
       font-size: 18px;
       margin-bottom: 20px;

@@ -1,5 +1,40 @@
 <template>
   <div class="container">
+    <el-dialog
+      v-model="showModal"
+      :width="dialogWidth"
+      :height="dialogHeight"
+      :before-close="handleClose"
+      class="myDialog"
+    >
+      <!-- 右上角的按钮 -->
+      <template v-slot:header>
+        <span>脑部图像信息</span>
+        <el-button
+          type="link"
+          icon="el-icon-minus"
+          @click="minimize"
+          class="icon-button"
+          ><el-icon class="el-icon-zoom-in"><ZoomOut /></el-icon
+        ></el-button>
+        <el-button
+          type="link"
+          icon="el-icon-zoom-in"
+          @click="maximize"
+          class="icon-button"
+          ><el-icon class="el-icon-zoom-in"><ZoomIn /></el-icon
+        ></el-button>
+        <!-- <el-button type="link" icon="el-icon-close" @click="close"></el-button> -->
+      </template>
+
+      <!-- 弹窗内容放在这里 -->
+      <div class="mySlot" :style="dialogStyle">
+        <slot>
+          <img src="../assets/cut.jpg" class="dialogImg" />
+          <button @click="cut" class="cutBtn">进行分割</button>
+        </slot>
+      </div>
+    </el-dialog>
     <el-scrollbar class="myScrollbar" style="height: 100vh">
       <el-row :gutter="20" class="navbar">
         <el-col :span="4">
@@ -9,56 +44,111 @@
           <div class="ep-bg-purple eng">Medical Intelligence</div>
         </el-col>
         <el-col :span="11">
-          <div class="grid-content ep-bg-purple"/>
+          <div class="grid-content ep-bg-purple" />
         </el-col>
         <el-col :span="1.5">
-          <div class="grid-content ep-bg-purple nav" @click="navigateToHome">首页</div>
+          <div class="grid-content ep-bg-purple nav" @click="navigateToHome">
+            首页
+          </div>
         </el-col>
         <el-col :span="1.5">
-          <div class="grid-content ep-bg-purple nav" @click="navigateToPatientInfo">病人信息</div>
+          <div
+            class="grid-content ep-bg-purple nav"
+            @click="navigateToPatientInfo"
+          >
+            病人信息
+          </div>
         </el-col>
         <el-col :span="1.5">
-          <div class="grid-content ep-bg-purple nav" @click="navigateToClassicalCase">经典案例</div>
+          <div
+            class="grid-content ep-bg-purple nav"
+            @click="navigateToClassicalCase"
+          >
+            经典案例
+          </div>
         </el-col>
         <el-col :span="1.5">
-          <div class="grid-content ep-bg-purple nav" @click="navigateToImageCut">图像分割</div>
+          <div
+            class="grid-content ep-bg-purple nav"
+            @click="navigateToImageCut"
+          >
+            图像分割
+          </div>
         </el-col>
         <el-col :span="1.5">
-          <div class="grid-content ep-bg-purple nav" @click="navigateToAboutView">关于我们</div>
+          <div
+            class="grid-content ep-bg-purple nav"
+            @click="navigateToAboutView"
+          >
+            关于我们
+          </div>
         </el-col>
       </el-row>
       <div class="success" v-if="loginStatus">
         <div class="searchBar">
           <el-form
-              ref="ruleFormRef"
-              :model="ruleForm"
-              :rules="rules"
-              label-width="120px"
-              class="block"
+            ref="ruleFormRef"
+            :model="ruleForm"
+            :rules="rules"
+            label-width="120px"
+            class="block"
           >
             <el-form-item label="创建时间" prop="date" required>
               <el-date-picker
-                  v-model="ruleForm.date"
-                  type="date"
-                  placeholder="请选择时间"
-                  style="width: 100%"
+                v-model="ruleForm.date"
+                type="date"
+                placeholder="请选择时间"
+                style="width: 100%"
               />
             </el-form-item>
             <el-form-item label="病人电话" prop="phoneNum">
-              <el-input v-model="ruleForm.phoneNum" placeholder="请输入病人电话" clearable/>
+              <el-input
+                v-model="ruleForm.phoneNum"
+                placeholder="请输入病人电话"
+                clearable
+              />
             </el-form-item>
             <el-form-item label="病人姓名" prop="name">
-              <el-input v-model="ruleForm.name" placeholder="请输入病人姓名" clearable/>
+              <el-input
+                v-model="ruleForm.name"
+                placeholder="请输入病人姓名"
+                clearable
+              />
+            </el-form-item>
+            <el-form-item>
+              <el-button type="primary" @click="onSearch" class="searchBtn"
+                >查询</el-button
+              >
             </el-form-item>
           </el-form>
         </div>
         <div class="patientBox">
-
+          <el-table
+            :data="tableData"
+            height="400"
+            style="width: 100%"
+            class="patientTable"
+          >
+            <el-table-column prop="num" label="序号" width="100" />
+            <el-table-column prop="name" label="姓名" width="150" />
+            <el-table-column prop="sex" label="性别" width="100" />
+            <el-table-column prop="age" label="年龄" width="100" />
+            <el-table-column prop="doctor" label="主治医师" width="150" />
+            <el-table-column prop="situation" label="病情" width="180" />
+            <el-table-column prop="img" label="脑部图像" width="100">
+              <template v-slot="scope">
+                <a @click="handleImageClick(scope.row)">查看</a>
+              </template>
+            </el-table-column>
+            <el-table-column prop="phone" label="电话" width="150" />
+            <el-table-column prop="status" label="手术情况" width="100" />
+          </el-table>
+          <el-pagination layout="prev, pager, next" :total="100" />
         </div>
       </div>
       <div class="failure" v-else>
         <div class="image">
-          <img src="../assets/noPower.png" alt="" class="failureImage">
+          <img src="../assets/noPower.png" alt="" class="failureImage" />
         </div>
         <div class="text">
           <text>当前无权限，请登陆查看病人信息</text>
@@ -66,28 +156,45 @@
         <button class="login" @click="navigateToLogin">去登陆</button>
       </div>
       <div class="bottomComponent">
-        <contactUs :style="bottomComponentStyle"/>
+        <contactUs :style="bottomComponentStyle" />
       </div>
     </el-scrollbar>
   </div>
 </template>
 
 <script lang="ts">
-import {computed, watchEffect, ref, defineComponent, reactive, watch} from "vue";
+import {
+  computed,
+  watchEffect,
+  ref,
+  defineComponent,
+  reactive,
+  watch,
+} from "vue";
 import contactUs from "@/components/ContactUs.vue";
-import type {FormInstance, FormRules} from 'element-plus'
+import { FormInstance, FormRules, ElMessageBox } from "element-plus";
 
 interface RuleForm {
-  name: string
-  date: string
-  phoneNum: string
+  name: string;
+  date: string;
+  phoneNum: string;
+}
+interface TableRow {
+  num: string;
+  name: string;
+  sex: string;
+  age: string;
+  doctor: string;
+  situation: string;
+  img: string;
+  phone: string;
+  status: string;
 }
 
 export default defineComponent({
-
   name: "PatientInfo",
   components: {
-    contactUs
+    contactUs,
   },
   created() {
     // this.loginStatus = localStorage.getItem("isLogin") === "true"
@@ -95,17 +202,18 @@ export default defineComponent({
   },
   setup() {
     const loginStatus = ref(true);
+    // 控制不同情况下，底部ConcatUs组件的样式
     const bottomComponentStyle = computed(() => ({
-      position: loginStatus.value ? "fixed" : "relative",
-      bottom: loginStatus.value ? "0" : "auto",
+      position: loginStatus.value ? "sticky" : "relative",
+      top: loginStatus.value ? "0" : "auto",
       width: "100%",
     }));
-    const ruleFormRef = ref<FormInstance>()
+    const ruleFormRef = ref<FormInstance>();
     const ruleForm = reactive<RuleForm>({
-      name: '',
-      date: '',
-      phoneNum: '',
-    })
+      name: "",
+      date: "",
+      phoneNum: "",
+    });
     const shortcuts = ref([
       {
         text: "今天",
@@ -130,29 +238,155 @@ export default defineComponent({
     ]);
     const rules = reactive<FormRules<RuleForm>>({
       name: [
-        {required: true, message: '请输入姓名', trigger: 'blur'},
-        {min: 2, max: 10, message: '长度在 2 到 10 个字符', trigger: 'blur'}
+        { required: true, message: "请输入姓名", trigger: "blur" },
+        { min: 2, max: 10, message: "长度在 2 到 10 个字符", trigger: "blur" },
       ],
       phoneNum: [
-        {required: true, message: '请输入手机号', trigger: 'blur'},
-        {min: 11, max: 11, message: '长度为 11 个字符', trigger: 'blur'}
+        { required: true, message: "请输入手机号", trigger: "blur" },
+        { min: 11, max: 11, message: "长度为 11 个字符", trigger: "blur" },
       ],
-      date: [
-        {required: true, message: '请选择日期', trigger: 'blur'},
-      ]
+      date: [{ required: true, message: "请选择日期", trigger: "blur" }],
     });
-    const handleSearch = (newData: { name: string; date: string; phoneNum: string; }) => {
-          console.log(newData);
-          console.log('我被调用啦');
-          // /*递归判断改变的数据，使用name进行查询*/
+    const handleSearch = (newData: {
+      name: string;
+      date: string;
+      phoneNum: string;
+    }) => {
+      console.log(newData);
+      console.log("我被调用啦");
+      // /*递归判断改变的数据，使用name进行查询*/
+    };
+    const tableData = [
+      {
+        num: "1",
+        name: "大白菜",
+        sex: "男",
+        age: "18",
+        doctor: "李医生",
+        situation: "脑出血",
+        img: "查看",
+        phone: "12345678910",
+        status: "未手术",
+      },
+      {
+        num: "2",
+        name: "大白菜",
+        sex: "男",
+        age: "18",
+        doctor: "李医生",
+        situation: "脑出血",
+        img: "查看",
+        phone: "12345678910",
+        status: "未手术",
+      },
+      {
+        num: "3",
+        name: "大白菜",
+        sex: "男",
+        age: "18",
+        doctor: "李医生",
+        situation: "脑出血",
+        img: "查看",
+        phone: "12345678910",
+        status: "未手术",
+      },
+      {
+        num: "4",
+        name: "大白菜",
+        sex: "男",
+        age: "18",
+        doctor: "李医生",
+        situation: "脑出血",
+        img: "查看",
+        phone: "12345678910",
+        status: "未手术",
+      },
+      {
+        num: "5",
+        name: "大白菜",
+        sex: "男",
+        age: "18",
+        doctor: "李医生",
+        situation: "脑出血",
+        img: "查看",
+        phone: "12345678910",
+        status: "未手术",
+      },
+      {
+        num: "6",
+        name: "大白菜",
+        sex: "男",
+        age: "18",
+        doctor: "李医生",
+        situation: "脑出血",
+        img: "查看",
+        phone: "12345678910",
+        status: "未手术",
+      },
+      {
+        num: "7",
+        name: "大白菜",
+        sex: "男",
+        age: "18",
+        doctor: "李医生",
+        situation: "脑出血",
+        img: "查看",
+        phone: "12345678910",
+        status: "未手术",
+      },
+      {
+        num: "8",
+        name: "大白菜",
+        sex: "男",
+        age: "18",
+        doctor: "李医生",
+        situation: "脑出血",
+        img: "查看",
+        phone: "12345678910",
+        status: "未手术",
+      },
+    ];
+    const showModal = ref(false);
+    const dialogWidth = ref("60%"); // 初始宽度
+    const dialogHeight = ref("80%"); // 初始高度
+    const handleImageClick = (row: TableRow) => {
+      console.log(row);
+      console.log("old", showModal.value);
 
-        };
+      showModal.value = true;
+      console.log("new", showModal.value);
 
-    watch(() => ruleForm, (newData, oldData) => {
-      console.log(newData, oldData)
-      handleSearch(newData);
-    }, {deep: true});
+    };
 
+    const minimize = () => {
+      // 实现最小化逻辑
+      dialogWidth.value = "30%";
+      dialogHeight.value = "30%";
+    };
+    const maximize = () => {
+      // 实现最大化逻辑
+      dialogWidth.value = "100%";
+      dialogHeight.value = "100%";
+    };
+    const close = () => {
+      showModal.value = false;
+      dialogWidth.value = "50%"; // 关闭时恢复默认宽度
+      dialogHeight.value = "80%"; // 关闭时恢复默认高度
+    };
+    const handleClose = (done: () => void) => {
+      // 点击右上角关闭按钮时触发
+      dialogWidth.value = "50%"; // 关闭时恢复默认宽度
+      dialogHeight.value = "80%"; // 关闭时恢复默认高度
+      done();
+    };
+    watch(
+      () => ruleForm,
+      (newData, oldData) => {
+        console.log(newData, oldData);
+        handleSearch(newData);
+      },
+      { deep: true }
+    );
 
     return {
       loginStatus,
@@ -161,51 +395,105 @@ export default defineComponent({
       shortcuts,
       rules,
       ruleFormRef,
+      tableData,
+      handleImageClick,
+      showModal,
+      dialogWidth,
+      dialogHeight,
+      minimize,
+      maximize,
+      close,
+      handleClose,
     };
   },
   methods: {
     navigateToLogin() {
-      this.$router.push('/login')
+      this.$router.push("/login");
     },
-    navigateToPatientInfo
-    () {
+    navigateToPatientInfo() {
       this.$router.push("/patientInfo");
-    }
-    ,
+    },
     navigateToClassicalCase() {
       this.$router.push("/classicalCase");
-    }
-    ,
+    },
     navigateToImageCut() {
       this.$router.push("/imageCut");
-    }
-    ,
+    },
     navigateToAboutView() {
       this.$router.push("/aboutView");
-    }
-    ,
+    },
     navigateToHome() {
       this.$router.push("/");
-    }
-    ,
+    },
+    onSearch() {
+      console.log("我被查询啦");
+      console.log(this.ruleForm);
+    },
   },
-
-})
+});
 </script>
 
 <style lang="less" scoped>
-*, body, html {
+*,
+body,
+html {
   margin: 0;
   padding: 0;
 }
 
 .container {
   position: relative;
+  background-color: #f8f8f8;
+}
+
+.myDialog {
+  z-index: 9999 !important;
+  .icon-button {
+    width: 20px; /* 宽度 */
+    height: 20px; /* 高度 */
+    border: none;
+    border-radius: 10%; /* 圆角 */
+    background-color: #fff; /* 背景色 */
+    cursor: pointer; /* 鼠标移入指针变成小手 */
+    margin-right: 10px;
+  }
+
+  .icon-button i {
+    font-size: 18px; /* 调整图标大小 */
+    color: #333; /* 调整图标颜色 */
+  }
+  .dialogImg {
+    max-width: 100%;
+    max-height: 100%;
+    width: auto; /* 宽度自适应 */
+    height: auto; /* 高度自适应 */
+  }
+  span {
+    font-size: 20px;
+    font-weight: bold;
+    margin-right: 20px;
+  }
+  .mySlot {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    .cutBtn {
+      width: 200px;
+      height: 50px;
+      background-color: #9a9a9a;
+      border: none;
+      border-radius: 15px;
+      color: black;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+  }
 }
 
 .myScrollbar {
-  overflow: hidden !important;
-
   &::-webkit-scrollbar {
     width: 6px; /* 滚动条宽度 */
     height: 6px; /* 滚动条高度 */
@@ -248,22 +536,30 @@ export default defineComponent({
   .nav {
     font-size: 20px;
     color: #fff;
-    margin-top: 20px;
     margin-left: 20px;
     cursor: pointer;
     height: 100%;
-    display: flex; /* 添加Flex布局 */
-    align-items: center; /* 让文字垂直居中 */
-    margin-top: 0;
+    display: flex;
+    align-items: center;
+  }
+
+  .item {
+    background-color: purple !important;
   }
 }
 
 .success {
-  margin-bottom: 80px;
-
+  margin-bottom: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
   .searchBar {
     margin-top: 20px;
-
+    height: 100px;
+    width: 1400px;
+    background-color: #ffffff;
+    border-radius: 20px;
     .block {
       display: flex;
       justify-content: center;
@@ -272,6 +568,26 @@ export default defineComponent({
       span {
         margin-right: 10px;
       }
+      .searchBtn {
+        background-color: #757575;
+        margin-top: 50px;
+        width: 100px;
+        border-radius: 10px;
+        margin-right: 10px;
+      }
+    }
+  }
+  .patientBox {
+    width: 1400px;
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    .patientTable {
+      display: flex;
+      align-items: center;
+      flex-direction: column;
     }
   }
 }
@@ -317,5 +633,4 @@ export default defineComponent({
     cursor: pointer;
   }
 }
-
 </style>
