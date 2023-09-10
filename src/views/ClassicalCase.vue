@@ -1,49 +1,11 @@
 <template>
   <div class="container">
-    <el-dialog
-      v-model="showModal"
-      :width="dialogWidth"
-      :height="dialogHeight"
-      :before-close="handleClose"
-      class="myDialog"
-    >
-      <!-- 右上角的按钮 -->
-      <template v-slot:header>
-        <span>案例详情</span>
-        <el-button
-          type="link"
-          icon="el-icon-minus"
-          @click="minimize"
-          class="icon-button"
-          ><el-icon class="el-icon-zoom-in"><ZoomOut /></el-icon
-        ></el-button>
-        <el-button
-          type="link"
-          icon="el-icon-zoom-in"
-          @click="maximize"
-          class="icon-button"
-          ><el-icon class="el-icon-zoom-in"><ZoomIn /></el-icon
-        ></el-button>
-        <!-- <el-button type="link" icon="el-icon-close" @click="close"></el-button> -->
-      </template>
-
-      <!-- 弹窗内容放在这里 -->
+    <div class="myDialog" v-if="showModal">
       <div class="mySlot" :style="dialogStyle">
-        <slot>
-          <img
-            src="https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png"
-            class="dialogImg"
-          />
-          <div class="dialpgInfo">
-            <span>{{ selectedCardData.name }}</span>
-            <span>{{ selectedCardData.sex }}</span>
-            <span>{{ selectedCardData.age }}岁</span>
-            <p>{{ selectedCardData.situation }}</p>
-          </div>
-        </slot>
+        <case-info :selectedCardData="selectedCardData"></case-info>
       </div>
-    </el-dialog>
-    <el-scrollbar class="myScrollbar" style="height: 100vh">
+    </div>
+    <el-scrollbar class="myScrollbar" style="height: 100vh" v-if="!showModal">
       <el-row :gutter="20" class="navbar">
         <el-col :span="4">
           <div class="ep-bg-purple title">
@@ -139,9 +101,10 @@
 
 <script lang='ts'>
 import ContactUs from "@/components/ContactUs.vue";
+import CaseInfo from "@/components/CaseInfo.vue";
 import { ref } from "vue";
 export default {
-  components: { ContactUs },
+  components: { ContactUs, CaseInfo },
   name: "ClassicalCase",
   setup() {
     const currentDate = ref(new Date());
@@ -150,6 +113,8 @@ export default {
         name: "Celine Ryan",
         sex: "女",
         age: "40",
+        title:'免疫细胞让直肠癌跟自己说再见',
+        infoDetail:'2013年9月，Celine Ryan去做结肠镜被诊断为患有三(C)期结直,肠癌。在经历了一段时间的化疗后，她决定尝试免疫疗法。美国国立卫生研究院的科学家们在检测从Celine的肿瘤组织中提取出来的肿瘤浸润淋巴细胞(TILs) 时，鉴定出了能够识别并攻',
         situation:
           "检测从Celine的肿瘤组织中提取出来的肿瘤浸润淋巴细胞，通过图像分割技术，医生完成手术，9个月后恢复健康",
       },
@@ -157,6 +122,8 @@ export default {
         name: "Alex Smith",
         sex: "男",
         age: "50",
+        title:'免疫细胞让直肠癌跟自己说再见',
+        infoDetail:'2013年9月，Celine Ryan去做结肠镜被诊断为患有三(C)期结直,肠癌。在经历了一段时间的化疗后，她决定尝试免疫疗法。美国国立卫生研究院的科学家们在检测从Celine的肿瘤组织中提取出来的肿瘤浸润淋巴细胞(TILs) 时，鉴定出了能够识别并攻',
         situation:
           "检测从Alex的肿瘤组织中提取出来的肿瘤浸润淋巴细胞，通过图像分割技术，医生完成手术，9个月后恢复健康",
       },
@@ -164,30 +131,23 @@ export default {
         name: "Jenny Daneil",
         sex: "女",
         age: "30",
+        title:'免疫细胞让直肠癌跟自己说再见',
+        infoDetail:'2013年9月，Celine Ryan去做结肠镜被诊断为患有三(C)期结直,肠癌。在经历了一段时间的化疗后，她决定尝试免疫疗法。美国国立卫生研究院的科学家们在检测从Celine的肿瘤组织中提取出来的肿瘤浸润淋巴细胞(TILs) 时，鉴定出了能够识别并攻',
         situation:
           "检测从Jenny的肿瘤组织中提取出来的肿瘤浸润淋巴细胞，通过图像分割技术，医生完成手术，9个月后恢复健康",
       },
     ];
-    const selectedCardData = ref({name:'',sex:'',age:'',situation:''});
+    const selectedCardData = ref({ name: "", sex: "", age: "", situation: "" ,title:"",infoDetail:""});
     const handleImageClick = (index: number) => {
       showModal.value = true;
       selectedCardData.value = patients[index];
+
       console.log(patients[index] === selectedCardData.value);
     };
     //控制dialog
     const showModal = ref(false);
-    const dialogWidth = ref("40%"); // 初始宽度
-    const dialogHeight = ref("60%"); // 初始高度
-    const minimize = () => {
-      // 实现最小化逻辑
-      dialogWidth.value = "20%";
-      dialogHeight.value = "30%";
-    };
-    const maximize = () => {
-      // 实现最大化逻辑
-      dialogWidth.value = "100%";
-      dialogHeight.value = "100%";
-    };
+    const dialogWidth = ref("100%"); // 初始宽度
+    const dialogHeight = ref("100%"); // 初始高度
     const close = () => {
       showModal.value = false;
       dialogWidth.value = "40%"; // 关闭时恢复默认宽度
@@ -206,12 +166,30 @@ export default {
       showModal,
       dialogWidth,
       dialogHeight,
-      minimize,
-      maximize,
       close,
       handleClose,
       selectedCardData,
     };
+  },
+  methods: {
+    navigateToLogin() {
+      this.$router.push("/login");
+    },
+    navigateToPatientInfo() {
+      this.$router.push("/patientInfo");
+    },
+    navigateToClassicalCase() {
+      this.$router.push("/classicalCase");
+    },
+    navigateToImageCut() {
+      this.$router.push("/imageCut");
+    },
+    navigateToAboutView() {
+      this.$router.push("/aboutView");
+    },
+    navigateToHome() {
+      this.$router.push("/");
+    },
   },
 };
 </script>
@@ -236,48 +214,12 @@ html {
 }
 .myDialog {
   z-index: 9999 !important;
-  .icon-button {
-    width: 20px; /* 宽度 */
-    height: 20px; /* 高度 */
-    border: none;
-    border-radius: 10%; /* 圆角 */
-    background-color: #fff; /* 背景色 */
-    cursor: pointer; /* 鼠标移入指针变成小手 */
-    margin-right: 10px;
-  }
 
-  .icon-button i {
-    font-size: 18px; /* 调整图标大小 */
-    color: #333; /* 调整图标颜色 */
-  }
-  .dialogImg {
-    max-width: 100%;
-    max-height: 100%;
-    width: auto; /* 宽度自适应 */
-    height: auto; /* 高度自适应 */
-  }
-  span {
-    font-size: 20px;
-    font-weight: bold;
-    margin-right: 20px;
-  }
   .mySlot {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-
-    .cutBtn {
-      width: 200px;
-      height: 50px;
-      background-color: #9a9a9a;
-      border: none;
-      border-radius: 15px;
-      color: black;
-      font-size: 16px;
-      cursor: pointer;
-      margin-top: 20px;
-    }
+    min-height: 800px;
+    min-width: 1000px;
+    height: auto;
+    width: auto;
   }
 }
 .navbar {

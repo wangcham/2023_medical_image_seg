@@ -1,13 +1,17 @@
-import {createRouter, createWebHistory} from 'vue-router'
+import {RouteRecordRaw, createRouter, createWebHistory} from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import ContactUs from '../components/ContactUs.vue'
 import Login from '../views/Login.vue'
+import CaseInfo from '../components/CaseInfo.vue'
 
-const routes = [
+const routes : RouteRecordRaw[] = [
   {
     path: '/',
     name: 'home',
-    component: HomeView,ContactUs
+    components:{
+      default: HomeView,
+      contactUs: ContactUs
+    }
   },
   {
     path: '/PatientInfo',
@@ -18,11 +22,12 @@ const routes = [
     }
   },
   {
-    path: '/ClassicalCase',
-    name: 'ClassicalCase',
+    path: '/classicalCase',
+    name: 'classicalCase',
     components: {
       default: () => import(/* webpackChunkName: "about" */ '../views/ClassicalCase.vue'),
-      contactUs: ContactUs
+      contactUs: ContactUs,
+      caseInfo: CaseInfo
     }
   },
   {
@@ -33,7 +38,10 @@ const routes = [
   {
     path: '/login',
     name: 'login',
-    component: Login,HomeView
+    components:{
+      default: Login,
+      contactUs: ContactUs
+    } 
   },
   {
     path: '/about',
