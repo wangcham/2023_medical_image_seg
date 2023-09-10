@@ -30,7 +30,7 @@
       <!-- 弹窗内容放在这里 -->
       <div class="mySlot" :style="dialogStyle">
         <slot>
-          <img src="../assets/cut.jpg" class="dialogImg" />
+          <img src="../assets/mind.jpg" class="dialogImg" />
           <button @click="cut" class="cutBtn">进行分割</button>
         </slot>
       </div>
