@@ -78,10 +78,6 @@ export default defineComponent({
     navigateToHome() {
       this.$router.push("/");
     },
-    onSearch() {
-      console.log("我被查询啦");
-      console.log(this.ruleForm);
-    },
   },
   setup() {
     const info1 = ref(
@@ -102,7 +98,7 @@ export default defineComponent({
 .navbar {
   width: 100%;
   height: 500px;
-  background-image: url("../assets/bgcAbout.jpeg");
+  background-image: url("../assets/bgcAbout.png");
   background-size: 100% 100%;
   background-repeat: no-repeat;
   .nav:hover {

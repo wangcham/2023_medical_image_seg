@@ -102,19 +102,42 @@
 <script lang='ts'>
 import ContactUs from "@/components/ContactUs.vue";
 import CaseInfo from "@/components/CaseInfo.vue";
+import { onMounted } from "vue";
+import { useRoute, useRouter } from "vue-router";
 import { ref } from "vue";
 export default {
   components: { ContactUs, CaseInfo },
   name: "ClassicalCase",
   setup() {
+    const route = useRoute(); // 使用 useRoute 获取当前路由对象
+    const router = useRouter(); // 使用 useRouter 获取路由实例
+    const navigateToLogin = () => {
+      router.push("/login");
+    };
+    const navigateToPatientInfo = () => {
+      router.push("/patientInfo");
+    };
+    const navigateToClassicalCase = () => {
+      router.push("/classicalCase");
+    };
+    const navigateToImageCut = () => {
+      router.push("/imageCut");
+    };
+    const navigateToAboutView = () => {
+      router.push("/aboutView");
+    };
+    const navigateToHome = () => {
+      router.push("/");
+    };
     const currentDate = ref(new Date());
     const patients = [
       {
         name: "Celine Ryan",
         sex: "女",
         age: "40",
-        title:'免疫细胞让直肠癌跟自己说再见',
-        infoDetail:'2013年9月，Celine Ryan去做结肠镜被诊断为患有三(C)期结直,肠癌。在经历了一段时间的化疗后，她决定尝试免疫疗法。美国国立卫生研究院的科学家们在检测从Celine的肿瘤组织中提取出来的肿瘤浸润淋巴细胞(TILs) 时，鉴定出了能够识别并攻',
+        title: "免疫细胞让直肠癌跟自己说再见",
+        infoDetail:
+          "2013年9月，Celine Ryan去做结肠镜被诊断为患有三(C)期结直,肠癌。在经历了一段时间的化疗后，她决定尝试免疫疗法。美国国立卫生研究院的科学家们在检测从Celine的肿瘤组织中提取出来的肿瘤浸润淋巴细胞(TILs) 时，鉴定出了能够识别并攻",
         situation:
           "检测从Celine的肿瘤组织中提取出来的肿瘤浸润淋巴细胞，通过图像分割技术，医生完成手术，9个月后恢复健康",
       },
@@ -122,8 +145,9 @@ export default {
         name: "Alex Smith",
         sex: "男",
         age: "50",
-        title:'免疫细胞让直肠癌跟自己说再见',
-        infoDetail:'2013年9月，Celine Ryan去做结肠镜被诊断为患有三(C)期结直,肠癌。在经历了一段时间的化疗后，她决定尝试免疫疗法。美国国立卫生研究院的科学家们在检测从Celine的肿瘤组织中提取出来的肿瘤浸润淋巴细胞(TILs) 时，鉴定出了能够识别并攻',
+        title: "免疫细胞让直肠癌跟自己说再见",
+        infoDetail:
+          "2013年9月，Celine Ryan去做结肠镜被诊断为患有三(C)期结直,肠癌。在经历了一段时间的化疗后，她决定尝试免疫疗法。美国国立卫生研究院的科学家们在检测从Celine的肿瘤组织中提取出来的肿瘤浸润淋巴细胞(TILs) 时，鉴定出了能够识别并攻",
         situation:
           "检测从Alex的肿瘤组织中提取出来的肿瘤浸润淋巴细胞，通过图像分割技术，医生完成手术，9个月后恢复健康",
       },
@@ -131,13 +155,21 @@ export default {
         name: "Jenny Daneil",
         sex: "女",
         age: "30",
-        title:'免疫细胞让直肠癌跟自己说再见',
-        infoDetail:'2013年9月，Celine Ryan去做结肠镜被诊断为患有三(C)期结直,肠癌。在经历了一段时间的化疗后，她决定尝试免疫疗法。美国国立卫生研究院的科学家们在检测从Celine的肿瘤组织中提取出来的肿瘤浸润淋巴细胞(TILs) 时，鉴定出了能够识别并攻',
+        title: "免疫细胞让直肠癌跟自己说再见",
+        infoDetail:
+          "2013年9月，Celine Ryan去做结肠镜被诊断为患有三(C)期结直,肠癌。在经历了一段时间的化疗后，她决定尝试免疫疗法。美国国立卫生研究院的科学家们在检测从Celine的肿瘤组织中提取出来的肿瘤浸润淋巴细胞(TILs) 时，鉴定出了能够识别并攻",
         situation:
           "检测从Jenny的肿瘤组织中提取出来的肿瘤浸润淋巴细胞，通过图像分割技术，医生完成手术，9个月后恢复健康",
       },
     ];
-    const selectedCardData = ref({ name: "", sex: "", age: "", situation: "" ,title:"",infoDetail:""});
+    const selectedCardData = ref({
+      name: "",
+      sex: "",
+      age: "",
+      situation: "",
+      title: "",
+      infoDetail: "",
+    });
     const handleImageClick = (index: number) => {
       showModal.value = true;
       selectedCardData.value = patients[index];
@@ -169,27 +201,13 @@ export default {
       close,
       handleClose,
       selectedCardData,
+      navigateToLogin,
+      navigateToPatientInfo,
+      navigateToClassicalCase,
+      navigateToImageCut,
+      navigateToAboutView,
+      navigateToHome,
     };
-  },
-  methods: {
-    navigateToLogin() {
-      this.$router.push("/login");
-    },
-    navigateToPatientInfo() {
-      this.$router.push("/patientInfo");
-    },
-    navigateToClassicalCase() {
-      this.$router.push("/classicalCase");
-    },
-    navigateToImageCut() {
-      this.$router.push("/imageCut");
-    },
-    navigateToAboutView() {
-      this.$router.push("/aboutView");
-    },
-    navigateToHome() {
-      this.$router.push("/");
-    },
   },
 };
 </script>
