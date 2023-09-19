@@ -23,7 +23,7 @@
           </div>
           <div class="ep-bg-purple eng">Medical Intelligence</div>
         </el-col>
-        <el-col :span="13">
+        <el-col :span="12">
           <div class="grid-content ep-bg-purple"/>
         </el-col>
         <el-col :span="1.5">
@@ -263,6 +263,7 @@ a {
   .grid-content {
     border-radius: 4px;
     min-height: 10px;
+    font-size: 20px;
   }
 
   .navbar {

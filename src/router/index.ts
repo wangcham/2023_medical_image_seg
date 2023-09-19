@@ -17,7 +17,7 @@ const routes : RouteRecordRaw[] = [
     path: '/PatientInfo',
     name: 'PatientInfo',
     components:{
-    default: () => import(/* webpackChunkName: "about" */ '../views/PatientInfo.vue'),
+    default: () => import( '../views/PatientInfo.vue'),
     contactUs: ContactUs
     }
   },
@@ -25,7 +25,7 @@ const routes : RouteRecordRaw[] = [
     path: '/classicalCase',
     name: 'classicalCase',
     components: {
-      default: () => import(/* webpackChunkName: "about" */ '../views/ClassicalCase.vue'),
+      default: () => import( '../views/ClassicalCase.vue'),
       contactUs: ContactUs,
       caseInfo: CaseInfo
     }
@@ -33,7 +33,7 @@ const routes : RouteRecordRaw[] = [
   {
     path: '/ImageCut',
     name: 'ImageCut',
-    component: () => import(/* webpackChunkName: "about" */ '../views/ImageCut.vue')
+    component: () => import('../views/ImageCut.vue')
   },
   {
     path: '/login',
