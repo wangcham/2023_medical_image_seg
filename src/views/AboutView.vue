@@ -7,7 +7,7 @@
         </div>
         <div class="ep-bg-purple eng">Medical Intelligence</div>
       </el-col>
-      <el-col :span="11"></el-col>
+      <el-col :span="10"></el-col>
       <el-col :span="1.5">
         <div class="grid-content ep-bg-purple nav" @click="navigateToHome">
           首页
@@ -21,6 +21,14 @@
           病人信息
         </div>
       </el-col>
+      <el-col :span="1.5">
+          <div
+            class="grid-content ep-bg-purple nav"
+            @click="navigateToChat"
+          >
+            在线答诊
+          </div>
+        </el-col>
       <el-col :span="1.5">
         <div
           class="grid-content ep-bg-purple nav"
@@ -78,6 +86,9 @@ export default defineComponent({
     navigateToHome() {
       this.$router.push("/");
     },
+        navigateToChat(){
+      this.$router.push("/chatView")
+    }
   },
   setup() {
     const info1 = ref(

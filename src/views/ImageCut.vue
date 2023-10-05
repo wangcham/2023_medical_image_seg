@@ -42,7 +42,7 @@
           </div>
           <div class="ep-bg-purple eng">Medical Intelligence</div>
         </el-col>
-        <el-col :span="11">
+        <el-col :span="8">
           <div class="grid-content ep-bg-purple" />
         </el-col>
         <el-col :span="1.5">
@@ -56,6 +56,14 @@
             @click="navigateToPatientInfo"
           >
             病人信息
+          </div>
+        </el-col>
+        <el-col :span="1.5">
+          <div
+            class="grid-content ep-bg-purple nav"
+            @click="navigateToChat"
+          >
+            在线答诊
           </div>
         </el-col>
         <el-col :span="1.5">
@@ -132,12 +140,18 @@
       </div>
       <div class="describe">
         <div class="left">
-          <h2>Transform算法</h2>
+          <h2>肝癌分割</h2>
+          <h4>背景和重要性：</h4>
           <p>
-            Transformer算法是一种用于自然语言处理(NLP) 和其他序
-            列数据处理任务的深度学习模型。
+            肝癌是一种常见的癌症类型，早期诊断对于患者的生存率至关重要。医学图像分割技术可以帮助医生更好地理解肝脏中的肿瘤位置和大小，从而制定更有效的治疗计划。
           </p>
-          <div class="advantage">
+          <h4>医学影像类型:</h4>
+          <p>
+            肝癌图像分割通常涉及到多种医学影像类型，包括计算机断层扫描（CT）和磁共振成像（MRI）。这些影像提供了不同的解剖和功能信息，可以用于更精确地定位和分割肿瘤。
+          </p>
+          <h4>分割方法:</h4>
+          <p>肝癌图像分割方法通常包括传统的图像处理技术和深度学习方法。传统方法包括阈值分割、边缘检测和区域生长等技术，而深度学习方法如卷积神经网络（CNN）和 U-Net 等已经在此领域取得了巨大的成功。</p>
+          <!-- <div class="advantage">
             <span
               ><el-icon color="#15b7fd"><SuccessFilled /></el-icon
               >Transformer算法的核心思想是利用自注意力(Self
@@ -150,13 +164,34 @@
               >自注意力机制允许模型在处理输入时，对输入序列中的所有位置进行加权处理，
               从而能够同时考虑全局和局部的上下文信息。
             </span>
-          </div>
+          </div> -->
         </div>
         <div class="right">
-          <img src="../assets/algorithm.png" alt="" />
+          <img src="../assets/gan1.jpg" alt="" style="width:300px;height:300px;" />
+          <img src="../assets/gan2.jpg" alt="" style="width:300px;height:300px;" />
         </div>
       </div>
+            <div class="describe">
+              <div class=" right1">
+          <img src="../assets/fei.jpg" alt="" style="width:600px;height:300px;" />
+        </div>
+        <div class="left1">
+          <h2>肺癌分割</h2>
+          <h4>背景和重要性：</h4>
+          <p>
+            肺癌是全球最常见的癌症之一，早期诊断对于提高生存率至关重要。医学图像分割技术可以在肺部CT扫描、X射线或其他影像中精确定位和分割肺部肿瘤，有助于早期发现和治疗计划。
+          </p>
+          <h4>医学影像类型:</h4>
+          <p>
+            肺癌图像分割通常涉及肺部的多模态医学图像，最常见的是CT扫描。这些图像提供了关于肺部结构和组织的详细信息，可用于诊断和疾病监测。
+          </p>
+          <h4>分割方法:</h4>
+          <p>肺癌图像分割使用各种技术，包括传统图像处理方法和深度学习方法。传统方法包括边缘检测、阈值分割和区域生长。然而，深度学习技术，如卷积神经网络（CNN）和 U-Net，已经在肺癌图像分割中取得了显著的成功。</p>
+        </div>
+        
+      </div>
       <div class="upLoad">
+        <h3 style="color:#a38334;margin-bottom:30px;">若对我们的技术有兴趣，欢迎在此试用！</h3>
         <div class="scan" @click="openFileInput">
           <el-icon size="80"><Plus /></el-icon>
           <input
@@ -189,7 +224,6 @@ import ContactUs from "@/components/ContactUs.vue";
 import CaseInfo from "@/components/CaseInfo.vue";
 import { useRoute, useRouter } from "vue-router";
 import { ref, watch } from "vue";
-import { post } from "@/utils";
 export default {
   name: "ImageCut",
   components: { ContactUs, CaseInfo },
@@ -220,6 +254,9 @@ export default {
     };
     const navigateToHome = () => {
       router.push("/");
+    };
+        const navigateToChat = () => {
+      router.push("/chatView");
     };
     const selectedFile = ref(null);
     const uploadProgress = ref(null);
@@ -282,6 +319,7 @@ export default {
       navigateToImageCut,
       navigateToAboutView,
       navigateToHome,
+      navigateToChat,
       handleFileChange,
       upLoad,
       openFileInput,
@@ -462,6 +500,29 @@ body {
       display: flex;
       justify-content: center;
       align-items: center;
+    }
+    .left1 {
+      padding-top: 50px;
+      display: flex;
+      flex-direction: column;
+      height: auto;
+      text-align: left;
+      z-index: 2;
+      width: 619px;
+      margin-left: 50px;
+
+    }
+    .right1 {
+      padding-top: 50px;
+      z-index: 2;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-left: 160px;
+
+    }
+    h4{
+      margin-top: 10px;
     }
     p {
       margin: 22px 0 8px 0;
