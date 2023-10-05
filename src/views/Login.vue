@@ -8,7 +8,7 @@
             <el-input
               placeholder="请输入手机号码"
               v-model="formInline.phone"
-              :style="{ width: '400px' }" 
+              :style="{ width: '400px' }"
               clearable
             ></el-input>
           </el-form-item>
@@ -16,19 +16,19 @@
             <el-input
               placeholder="请输入密码"
               v-model="formInline.password"
-              :style="{ width: '400px' }" 
+              :style="{ width: '400px' }"
               clearable
             ></el-input>
           </el-form-item>
-          <el-form-item>
+          <!-- <el-form-item>
             <el-input
               placeholder="请输入短信验证码"
               v-model="formInline.check"
-              :style="{ width: '270px', marginRight: '30px'}" 
+              :style="{ width: '270px', marginRight: '30px' }"
               clearable
             ></el-input>
             <el-button type="primary" @click="onSent">发送验证码</el-button>
-          </el-form-item>
+          </el-form-item> -->
           <el-form-item>
             <el-button class="myBtn" @click="onSubmit">登录</el-button>
           </el-form-item>
@@ -43,6 +43,8 @@
   </div>
 </template>
 <script lang="ts">
+import router from "@/router";
+import axiosInstance from "@/utils";
 import { defineComponent, reactive } from "vue";
 
 export default defineComponent({
@@ -51,12 +53,28 @@ export default defineComponent({
     const formInline = reactive({
       phone: "",
       password: "",
-      check: "",
+      // check: "",
     });
-    const onSubmit = () => {
+    const onSubmit = async () => {
+      try {
+        // 发送请求
+        const res = await axiosInstance.post("/doctor_login",formInline);
+        // 请求处理成功后
+        if(res){
+          // 保存token
+          localStorage.setItem("token",res.data.token);
+          // 保存用户名
+          localStorage.setItem("username",res.data.username);
+          // 跳转到首页
+          router.push("/");
+        }
+        console.log(res);
+      } catch (error) {
+        console.log(error);
+      }
       console.log("submit!");
     };
-    const onSent = () => {
+    const onSent = async () => {
       console.log("sent!" + formInline.phone);
     };
     return {
@@ -101,7 +119,7 @@ body {
           width: 300px;
         }
       }
-      .myBtn{
+      .myBtn {
         width: 400px;
         color: whitesmoke;
         background-color: #409eff;
