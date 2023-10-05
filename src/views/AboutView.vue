@@ -7,13 +7,13 @@
         </div>
         <div class="ep-bg-purple eng">Medical Intelligence</div>
       </el-col>
-      <el-col :span="10"></el-col>
-      <el-col :span="2">
+      <el-col :span="11"></el-col>
+      <el-col :span="1.5">
         <div class="grid-content ep-bg-purple nav" @click="navigateToHome">
           首页
         </div>
       </el-col>
-      <el-col :span="2">
+      <el-col :span="1.5">
         <div
           class="grid-content ep-bg-purple nav"
           @click="navigateToPatientInfo"
@@ -21,7 +21,7 @@
           病人信息
         </div>
       </el-col>
-      <el-col :span="2">
+      <el-col :span="1.5">
         <div
           class="grid-content ep-bg-purple nav"
           @click="navigateToClassicalCase"
@@ -29,12 +29,12 @@
           经典案例
         </div>
       </el-col>
-      <el-col :span="2">
+      <el-col :span="1.5">
         <div class="grid-content ep-bg-purple nav" @click="navigateToImageCut">
           图像分割
         </div>
       </el-col>
-      <el-col :span="2">
+      <el-col :span="1.5">
         <div class="grid-content ep-bg-purple nav" @click="navigateToAboutView">
           关于我们
         </div>
