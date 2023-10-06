@@ -30,7 +30,8 @@
       <!-- 弹窗内容放在这里 -->
       <div class="mySlot" :style="dialogStyle">
         <slot>
-          <img src="../assets/mind.jpg" class="dialogImg" />
+          <img :src="oriimage" class="dialogImg" v-if="!checkifseg"/>
+          <img :src="segimage" class="dialogImg" v-if="checkifseg">
           <button @click="cut" class="cutBtn">进行分割</button>
         </slot>
       </div>
@@ -122,7 +123,7 @@
             </el-form-item>
           </el-form>
         </div>
-        <div class="patientBox">
+        <div class="patientBox" v-loading="loading">
           <el-table
             :data="tableData"
             height="400"
@@ -163,6 +164,8 @@
 </template>
 
 <script lang="ts">
+import backend_prefix from 'common';
+import axios from 'axios';
 import {
   computed,
   watchEffect,
@@ -170,9 +173,10 @@ import {
   defineComponent,
   reactive,
   watch,
+  onMounted,
 } from "vue";
 import contactUs from "@/components/ContactUs.vue";
-import { FormInstance, FormRules, ElMessageBox } from "element-plus";
+import { FormInstance, FormRules, ElMessageBox, ElMessage } from "element-plus";
 
 interface RuleForm {
   name: string;
@@ -186,7 +190,7 @@ interface TableRow {
   age: string;
   doctor: string;
   situation: string;
-  img: string;
+  img:string;
   phone: string;
   status: string;
 }
@@ -201,6 +205,52 @@ export default defineComponent({
     console.log("created");
   },
   setup() {
+
+    onMounted(
+      () =>{
+        getdata();
+      }
+    );
+    //获得病人信息
+    const tableData = ref([])
+    const backend_prefix = 'http://localhost:5000'
+    const loading = ref(false)
+    const getdata = async() =>{
+      try{
+        loading.value  = true
+        const res = await axios.post(backend_prefix+"/getinfo")
+        if(res.data.status == 'fail'){
+          ElMessage.error(res.data.message)
+          loading.value = false
+        }else{
+          const rawData = res.data;
+          const tableData = rawData.map((item: { id: any; name: any; sex: any; age: any; doctor: any; situation: any; phone: any;img:any;status:any; }) => (
+              {
+                num:item.id,
+                name:item.name,
+                sex:item.sex,
+                age:item.age,
+                doctor:item.doctor,
+                situation:item.situation,
+                phone:item.phone,
+                img:item.id,
+                status:item.status,
+              }
+            )
+          );
+          tableData.value = tableData;
+          loading.value = false;
+        }
+      }catch(error){
+        console.log(error)
+        loading.value = false;
+      }finally{
+        console.log("finally")
+      }
+
+    };
+
+    //结束
     const loginStatus = ref(true);
     // 控制不同情况下，底部ConcatUs组件的样式
     const bottomComponentStyle = computed(() => ({
@@ -256,105 +306,58 @@ export default defineComponent({
       console.log("我被调用啦");
       // /*递归判断改变的数据，使用name进行查询*/
     };
-    const tableData = [
-      {
-        num: "1",
-        name: "大白菜",
-        sex: "男",
-        age: "18",
-        doctor: "李医生",
-        situation: "脑出血",
-        img: "查看",
-        phone: "12345678910",
-        status: "未手术",
-      },
-      {
-        num: "2",
-        name: "大白菜",
-        sex: "男",
-        age: "18",
-        doctor: "李医生",
-        situation: "脑出血",
-        img: "查看",
-        phone: "12345678910",
-        status: "未手术",
-      },
-      {
-        num: "3",
-        name: "大白菜",
-        sex: "男",
-        age: "18",
-        doctor: "李医生",
-        situation: "脑出血",
-        img: "查看",
-        phone: "12345678910",
-        status: "未手术",
-      },
-      {
-        num: "4",
-        name: "大白菜",
-        sex: "男",
-        age: "18",
-        doctor: "李医生",
-        situation: "脑出血",
-        img: "查看",
-        phone: "12345678910",
-        status: "未手术",
-      },
-      {
-        num: "5",
-        name: "大白菜",
-        sex: "男",
-        age: "18",
-        doctor: "李医生",
-        situation: "脑出血",
-        img: "查看",
-        phone: "12345678910",
-        status: "未手术",
-      },
-      {
-        num: "6",
-        name: "大白菜",
-        sex: "男",
-        age: "18",
-        doctor: "李医生",
-        situation: "脑出血",
-        img: "查看",
-        phone: "12345678910",
-        status: "未手术",
-      },
-      {
-        num: "7",
-        name: "大白菜",
-        sex: "男",
-        age: "18",
-        doctor: "李医生",
-        situation: "脑出血",
-        img: "查看",
-        phone: "12345678910",
-        status: "未手术",
-      },
-      {
-        num: "8",
-        name: "大白菜",
-        sex: "男",
-        age: "18",
-        doctor: "李医生",
-        situation: "脑出血",
-        img: "查看",
-        phone: "12345678910",
-        status: "未手术",
-      },
-    ];
     const showModal = ref(false);
     const dialogWidth = ref("60%"); // 初始宽度
     const dialogHeight = ref("80%"); // 初始高度
-    const handleImageClick = (row: TableRow) => {
-      console.log(row);
-      console.log("old", showModal.value);
+    //
 
-      showModal.value = true;
-      console.log("new", showModal.value);
+    //本质上nowid和imgid都是str类型的后端传来的id值，然后发送时作为username的键值对发送
+    
+    //查看图片
+    const oriimage = ref('')
+    const checkifseg = ref(false)
+    const nowid = ref('')
+    const handleImageClick = async(row: TableRow) => {
+      console.log(row);
+      const imgid = row.img
+      nowid.value = row.num
+      //在这里发axios请求获得图片
+      try{
+            const res = await axios.post(backend_prefix+"/get_info_image",{username:imgid},{responseType:'blob'})            
+            if(res.data.status == 'fail'){
+              ElMessage.error(res.data.message)
+            }else{
+              let blob  = new Blob([res.data],{type:res.data.type})
+              const url = URL.createObjectURL(blob)
+              oriimage.value = url;
+              console.log("获得图片")
+            }
+          }catch(error){
+            console.log(error)
+          }finally{
+            console.log("finally")
+          }
+      };
+
+    //分割图片
+    const segimage = ref('')
+    const cut = async() =>{
+      checkifseg.value = true
+      try{
+            const res = await axios.post(backend_prefix+"/getseg",{username:nowid.value},{responseType:'blob'})            
+            if(res.data.status == 'fail'){
+              ElMessage.error(res.data.message)
+            }else{
+              let blob  = new Blob([res.data],{type:res.data.type})
+              const url = URL.createObjectURL(blob)
+              segimage.value = url;
+              console.log("获得图片")
+            }
+          }catch(error){
+            console.log(error)
+          }finally{
+            console.log("finally")
+          }
 
     };
 
@@ -404,6 +407,12 @@ export default defineComponent({
       maximize,
       close,
       handleClose,
+      loading,
+      cut,
+      segimage,
+      oriimage,
+      checkifseg,
+      nowid,
     };
   },
   methods: {

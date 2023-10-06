@@ -38,14 +38,13 @@
 import axios from 'axios';
 // import { ElMessage } from 'element-plus';
 
-const baseURL = 'http://101.42.48.138:5000';
+const baseURL = 'http://localhost:5000';
 
 // 创建一个 Axios 实例
 const axiosInstance = axios.create({
   baseURL,
   timeout: 5000, // 请求超时时间
   headers: {
-    // 'Authorization':'',
     'token':'',
     'Content-Type': 'application/json',
   },
@@ -59,6 +58,8 @@ axiosInstance.interceptors.request.use(
     if (token) {
       // config.headers.token = `Bearer ${token}`;
       config.headers.token = token;
+    }else{
+      config.headers.token = "";
     }
     return config;
   },
