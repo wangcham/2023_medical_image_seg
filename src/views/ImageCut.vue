@@ -187,7 +187,7 @@
   <!--展示分割之后的弹窗-->
   <el-dialog v-model="showresult" title="分割图像结果">
   <div style="display: flex; flex-direction: column; align-items: center;">
-    <el-image :src="segresult" alt="result" style="margin-bottom: 10px;" />
+    <img :src="segresult" alt="result" style="margin-bottom: 10px;" />
     <div style="display: flex; align-items: center;">
       <el-input text="textarea" v-model="text" placeholder="欢迎点评" style="margin-right: 10px;" />
       <el-button @click="submittext" type="primary" plain size="medium">  发送点评  </el-button>
@@ -250,8 +250,8 @@ export default {
     const flag = ref(false)
     const loading = ref(false)
     const segresult = ref('')
-    const nulluser = ref('')
     const text = ref('')
+    const user = ref('')
 
     const openFileInput = () => {
       const fileInput = document.querySelector('input[type="file"]');
@@ -276,13 +276,15 @@ export default {
         console.log("selectedFile.value", selectedFile.value.name);
         formData.append("image", selectedFile.value);
         const username = localStorage.getItem("username")
-
+        console.log("这里的username是"+username)
         //设置匿名用户使用的用户名
         if (username === null){
-          nulluser.value = 'null'
+          user.value = 'null'
+        }else{
+          user.value = username
         }
 
-        formData.append("username",nulluser)
+        formData.append("username",user.value)
       }
       if(flag.value == true){
         console.log("前端调用分割功能")
@@ -353,8 +355,8 @@ export default {
       showresult,
       loading,
       segresult,
-      nulluser,
       text,
+      user,
     };
   },
 };

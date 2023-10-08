@@ -6,6 +6,8 @@
       :height="dialogHeight"
       :before-close="handleClose"
       class="myDialog"
+      destroy-on-close="true"
+      title="查看图像"
     >
       <!-- 右上角的按钮 -->
       <template v-slot:header>
@@ -28,11 +30,13 @@
       </template>
 
       <!-- 弹窗内容放在这里 -->
-      <div class="mySlot" :style="dialogStyle">
+      <div class="mySlot" :style="dialogStyle" >
         <slot>
-          <img :src="oriimage" class="dialogImg" v-if="!checkifseg"/>
-          <img :src="segimage" class="dialogImg" v-if="checkifseg">
-          <button @click="cut" class="cutBtn">进行分割</button>
+          <div style="display:flex;flex-direction:row">
+            <img class="dialogImg" :src="oriimage" style="margin-right:10px"/>
+            <img class="dialogImg" v-if="checkifseg" :src="switchseg()" />         
+          </div>
+          <button @click="cut" class="cutBtn" v-if="!checkifseg">进行分割</button>
         </slot>
       </div>
     </el-dialog>
@@ -117,7 +121,7 @@
               />
             </el-form-item>
             <el-form-item>
-              <el-button type="primary" @click="onSearch" class="searchBtn"
+              <el-button type="primary" @click="fake()" class="searchBtn"
                 >查询</el-button
               >
             </el-form-item>
@@ -205,7 +209,6 @@ export default defineComponent({
     console.log("created");
   },
   setup() {
-
     onMounted(
       () =>{
         getdata();
@@ -215,7 +218,14 @@ export default defineComponent({
     const tableData = ref([])
     const backend_prefix = 'http://localhost:5000'
     const loading = ref(false)
+    const fake = () =>{
+      ElMessage.error("未查询到结果")
+    }
+    const oriimage = ref('')
+    const segimage = ref('')
+    const seg = ref('')
     const getdata = async() =>{
+      console.log('调用getdata')
       try{
         loading.value  = true
         const res = await axios.post(backend_prefix+"/getinfo")
@@ -223,22 +233,24 @@ export default defineComponent({
           ElMessage.error(res.data.message)
           loading.value = false
         }else{
+          console.log('接收成功')
           const rawData = res.data;
-          const tableData = rawData.map((item: { id: any; name: any; sex: any; age: any; doctor: any; situation: any; phone: any;img:any;status:any; }) => (
+          console.log(rawData)
+          const tabledata = rawData.map( (item:any) => (
               {
                 num:item.id,
                 name:item.name,
                 sex:item.sex,
                 age:item.age,
                 doctor:item.doctor,
-                situation:item.situation,
-                phone:item.phone,
+                situation:item.status,
+                phone:item.telephone,
                 img:item.id,
-                status:item.status,
+                status:item.surgery,
               }
             )
           );
-          tableData.value = tableData;
+          tableData.value = tabledata;
           loading.value = false;
         }
       }catch(error){
@@ -297,6 +309,8 @@ export default defineComponent({
       ],
       date: [{ required: true, message: "请选择日期", trigger: "blur" }],
     });
+
+    //搜索
     const handleSearch = (newData: {
       name: string;
       date: string;
@@ -304,7 +318,6 @@ export default defineComponent({
     }) => {
       console.log(newData);
       console.log("我被调用啦");
-      // /*递归判断改变的数据，使用name进行查询*/
     };
     const showModal = ref(false);
     const dialogWidth = ref("60%"); // 初始宽度
@@ -314,23 +327,33 @@ export default defineComponent({
     //本质上nowid和imgid都是str类型的后端传来的id值，然后发送时作为username的键值对发送
     
     //查看图片
-    const oriimage = ref('')
     const checkifseg = ref(false)
     const nowid = ref('')
     const handleImageClick = async(row: TableRow) => {
       console.log(row);
-      const imgid = row.img
       nowid.value = row.num
+      console.log('nowid:'+nowid.value)
+      checkifseg.value = false
       //在这里发axios请求获得图片
       try{
-            const res = await axios.post(backend_prefix+"/get_info_image",{username:imgid},{responseType:'blob'})            
+            const formData = new FormData()
+            formData.append("username",nowid.value)
+            const res = await axios.post(backend_prefix+"/get_info_image",formData,{responseType:'blob'})            
             if(res.data.status == 'fail'){
               ElMessage.error(res.data.message)
             }else{
               let blob  = new Blob([res.data],{type:res.data.type})
-              const url = URL.createObjectURL(blob)
+              // const reader = new FileReader()
+              //  reader.onloadend = () => {
+              //   console.log('Reader loaded:', reader.result);
+              //   base64image.value = reader.result ? reader.result.toString() : '';
+              // };
+              // reader.readAsDataURL(blob);
+              const url = URL.createObjectURL(blob);
               oriimage.value = url;
-              console.log("获得图片")
+              console.log("结果",oriimage.value);
+              
+              showModal.value = true
             }
           }catch(error){
             console.log(error)
@@ -340,18 +363,19 @@ export default defineComponent({
       };
 
     //分割图片
-    const segimage = ref('')
     const cut = async() =>{
-      checkifseg.value = true
       try{
+            ElMessage.warning('图像分割中')
             const res = await axios.post(backend_prefix+"/getseg",{username:nowid.value},{responseType:'blob'})            
             if(res.data.status == 'fail'){
               ElMessage.error(res.data.message)
             }else{
               let blob  = new Blob([res.data],{type:res.data.type})
               const url = URL.createObjectURL(blob)
+              console.log("segimage:",url)
               segimage.value = url;
               console.log("获得图片")
+              checkifseg.value = true
             }
           }catch(error){
             console.log(error)
@@ -360,7 +384,10 @@ export default defineComponent({
           }
 
     };
-
+      const switchseg = () =>{
+        const url = segimage.value
+        return url
+      }
     const minimize = () => {
       // 实现最小化逻辑
       dialogWidth.value = "30%";
@@ -382,6 +409,7 @@ export default defineComponent({
       dialogHeight.value = "80%"; // 关闭时恢复默认高度
       done();
     };
+    
     watch(
       () => ruleForm,
       (newData, oldData) => {
@@ -408,13 +436,17 @@ export default defineComponent({
       close,
       handleClose,
       loading,
-      cut,
-      segimage,
-      oriimage,
       checkifseg,
       nowid,
+      segimage,
+      oriimage,
+      cut,
+      seg,
+      switchseg,
+      fake,
     };
   },
+
   methods: {
     navigateToLogin() {
       this.$router.push("/login");
@@ -437,6 +469,7 @@ export default defineComponent({
     onSearch() {
       console.log("我被查询啦");
       console.log(this.ruleForm);
+      
     },
   },
 });
