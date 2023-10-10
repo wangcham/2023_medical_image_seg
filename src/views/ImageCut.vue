@@ -188,10 +188,6 @@
   <el-dialog v-model="showresult" title="分割图像结果">
   <div style="display: flex; flex-direction: column; align-items: center;">
     <img :src="segresult" alt="result" style="margin-bottom: 10px;" />
-    <div style="display: flex; align-items: center;">
-      <el-input text="textarea" v-model="text" placeholder="欢迎点评" style="margin-right: 10px;" />
-      <el-button @click="submittext" type="primary" plain size="medium">  发送点评  </el-button>
-    </div>
   </div>
 </el-dialog>
 </template>

@@ -38,6 +38,13 @@
           </div>
           <button @click="cut" class="cutBtn" v-if="!checkifseg">进行分割</button>
         </slot>
+        <div style="display: flex; align-items: center;margin-top:20px" v-if="!checkifsend">
+            <el-input text="textarea" v-model="text" placeholder="欢迎点评" style="margin-right: 10px;" />
+            <el-button @click="submittext" type="primary" plain size="medium">  发送点评  </el-button>
+        </div>
+        <div v-if="checkifsend">
+          <p>{{des}}</p>
+        </div>
       </div>
     </el-dialog>
     <el-scrollbar class="myScrollbar" style="height: 100vh">
@@ -168,7 +175,7 @@
 </template>
 
 <script lang="ts">
-import backend_prefix from 'common';
+
 import axios from 'axios';
 import {
   computed,
@@ -181,6 +188,7 @@ import {
 } from "vue";
 import contactUs from "@/components/ContactUs.vue";
 import { FormInstance, FormRules, ElMessageBox, ElMessage } from "element-plus";
+import { TreeOptionsEnum } from 'element-plus/es/components/tree-v2/src/virtual-tree';
 
 interface RuleForm {
   name: string;
@@ -205,16 +213,46 @@ export default defineComponent({
     contactUs,
   },
   created() {
-    // this.loginStatus = localStorage.getItem("isLogin") === "true"
+    
+
     console.log("created");
   },
   setup() {
+    //getpatient info
     onMounted(
       () =>{
         getdata();
+        checkiflogin();
       }
     );
-    //获得病人信息
+    //登陆状态
+    const loginStatus = ref(false)
+    const checkiflogin = () =>{
+      const username = localStorage.getItem("username");
+      if(username){
+        loginStatus.value = true
+      }else{
+        loginStatus.value = false
+      }
+    }
+
+    //send desc
+    const checkifsend = ref(false)
+    const text = ref('')
+    const des = ref('')
+    const submittext = async() =>{
+      const res = await axios.post(backend_prefix+'/senddesc',{desc:text.value,id:nowid.value})
+      if(res.data.status == 'exists'){
+        des.value = res.data.desc
+      }
+      if(res.data.status == 'success'){
+        ElMessage.success("成功发送描述")
+        checkifsend.value = true
+      }else{
+        ElMessage.error(res.data.message)
+        checkifsend.value = true
+      }
+    }
     const tableData = ref([])
     const backend_prefix = 'http://localhost:5000'
     const loading = ref(false)
@@ -263,7 +301,7 @@ export default defineComponent({
     };
 
     //结束
-    const loginStatus = ref(true);
+
     // 控制不同情况下，底部ConcatUs组件的样式
     const bottomComponentStyle = computed(() => ({
       position: loginStatus.value ? "sticky" : "relative",
@@ -444,6 +482,10 @@ export default defineComponent({
       seg,
       switchseg,
       fake,
+      text,
+      submittext,
+      checkifsend,
+      des,
     };
   },
 

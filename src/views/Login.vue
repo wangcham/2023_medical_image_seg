@@ -65,6 +65,7 @@ export default defineComponent({
           // 保存用户名
           localStorage.setItem("username",res.data.username);
           console.log("接收到的user是"+res.data.username)
+           
           const user = localStorage.getItem("username")
           console.log('本地存储的username是'+user)
           // 跳转到首页
