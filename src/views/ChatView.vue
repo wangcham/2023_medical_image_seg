@@ -57,6 +57,7 @@
       <div class="infoBox">
         <div class="left">
           <div class="card" v-for="(item, index) in MesList" :key="index">
+            <img :src="item.headUrl" alt="" srcset="" />
             <img :src="item.headUrl" class="card-image" />
             <div class="card-content">
               <div class="mid">
@@ -75,7 +76,35 @@
             </div>
           </div>
         </div>
-        <div class="right">具体消息框</div>
+        <div class="right">
+          <div class="top">
+            <div class="des">
+              <h3>病人描述</h3>
+              <text
+                >天天头疼，掉头发,睡不好觉，一直持续很久了，是什么怎么回事呢?
+                ?</text
+              >
+            </div>
+            <div class="info">
+              <h3>病人信息</h3>
+              <text>王白白 男 30岁</text>
+            </div>
+          </div>
+          <div class="mid">
+            <div class="doctor">
+              
+              <div class="mes">
+                <text>这种症状是什么时候开始的呢? 想服用一些药物吗?</text>
+              </div>
+              <img
+                src="../assets/patient.jpg"
+                alt=""
+                srcset=""
+                style="width: 50px; height: 50px; border-radius: 50px"
+              />
+            </div>
+          </div>
+        </div>
       </div>
       <contact-us></contact-us>
     </el-scrollbar>
@@ -83,7 +112,7 @@
 </template>
 <script lang="ts">
 import Vue, { ref } from "vue";
-import { useRouter } from 'vue-router';
+import { useRouter } from "vue-router";
 export default {
   name: "ChatView",
   setup() {
@@ -116,7 +145,23 @@ export default {
         age: "20",
         info: "感冒",
         status: "已回复",
-        headUrl: "../assets/time.png",
+        headUrl: "../assets/patient.jpg",
+      },
+      {
+        name: "李德",
+        sex: "男",
+        age: "60",
+        info: "发烧",
+        status: "未读",
+        headUrl: "../assets/patient.jpg",
+      },
+      {
+        name: "刘东",
+        sex: "男",
+        age: "20",
+        info: "失眠，无法入睡 ",
+        status: "已回复",
+        headUrl: "../assets/patient.jpg",
       },
     ]);
 
@@ -219,9 +264,11 @@ export default {
   font-size: 14px;
 }
 .card-text {
-  margin-top: 10px;
+  margin-top: 8px;
   text-align: left;
   margin-left: 15px;
+  font-size: 13px;
+  color: #888;
 }
 .card-button {
   width: 60px;
@@ -241,7 +288,36 @@ export default {
   .right {
     width: 60vw;
     height: 80vh;
-    background-color: aqua;
+    display: flex;
+    flex-direction: column;
+    border-bottom: 1px solid darkgray;
+    border-left: 1px solid darkgray;
+    .top {
+      display: flex;
+      flex-direction: column;
+  justify-content: center; 
+      .des,
+      .info {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+    }
+    .mid {
+      .doctor {
+        display: flex;
+        flex-direction: row-reverse;
+        .mes {
+          width: 300px;
+          height: 100px;
+          background-color: #fff;
+          border-radius: 10px;
+          margin-right: 10px;
+          //灰色阴影
+          box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+      }
+    }
   }
 }
 </style>

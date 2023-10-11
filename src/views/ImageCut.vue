@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-        <el-dialog
+    <el-dialog
       v-model="showModal"
       :width="dialogWidth"
       :height="dialogHeight"
@@ -59,10 +59,7 @@
           </div>
         </el-col>
         <el-col :span="1.5">
-          <div
-            class="grid-content ep-bg-purple nav"
-            @click="navigateToChat"
-          >
+          <div class="grid-content ep-bg-purple nav" @click="navigateToChat">
             在线答诊
           </div>
         </el-col>
@@ -150,7 +147,10 @@
             肝癌图像分割通常涉及到多种医学影像类型，包括计算机断层扫描（CT）和磁共振成像（MRI）。这些影像提供了不同的解剖和功能信息，可以用于更精确地定位和分割肿瘤。
           </p>
           <h4>分割方法:</h4>
-          <p>肝癌图像分割方法通常包括传统的图像处理技术和深度学习方法。传统方法包括阈值分割、边缘检测和区域生长等技术，而深度学习方法如卷积神经网络（CNN）和 U-Net 等已经在此领域取得了巨大的成功。</p>
+          <p>
+            肝癌图像分割方法通常包括传统的图像处理技术和深度学习方法。传统方法包括阈值分割、边缘检测和区域生长等技术，而深度学习方法如卷积神经网络（CNN）和
+            U-Net 等已经在此领域取得了巨大的成功。
+          </p>
           <!-- <div class="advantage">
             <span
               ><el-icon color="#15b7fd"><SuccessFilled /></el-icon
@@ -167,13 +167,25 @@
           </div> -->
         </div>
         <div class="right">
-          <img src="../assets/gan1.jpg" alt="" style="width:300px;height:300px;" />
-          <img src="../assets/gan2.jpg" alt="" style="width:300px;height:300px;" />
+          <img
+            src="../assets/gan1.jpg"
+            alt=""
+            style="width: 300px; height: 300px"
+          />
+          <img
+            src="../assets/gan2.jpg"
+            alt=""
+            style="width: 300px; height: 300px"
+          />
         </div>
       </div>
-            <div class="describe">
-              <div class=" right1">
-          <img src="../assets/fei.jpg" alt="" style="width:600px;height:300px;" />
+      <div class="describe">
+        <div class="right1">
+          <img
+            src="../assets/fei.jpg"
+            alt=""
+            style="width: 600px; height: 300px"
+          />
         </div>
         <div class="left1">
           <h2>肺癌分割</h2>
@@ -186,12 +198,16 @@
             肺癌图像分割通常涉及肺部的多模态医学图像，最常见的是CT扫描。这些图像提供了关于肺部结构和组织的详细信息，可用于诊断和疾病监测。
           </p>
           <h4>分割方法:</h4>
-          <p>肺癌图像分割使用各种技术，包括传统图像处理方法和深度学习方法。传统方法包括边缘检测、阈值分割和区域生长。然而，深度学习技术，如卷积神经网络（CNN）和 U-Net，已经在肺癌图像分割中取得了显著的成功。</p>
+          <p>
+            肺癌图像分割使用各种技术，包括传统图像处理方法和深度学习方法。传统方法包括边缘检测、阈值分割和区域生长。然而，深度学习技术，如卷积神经网络（CNN）和
+            U-Net，已经在肺癌图像分割中取得了显著的成功。
+          </p>
         </div>
-        
       </div>
       <div class="upLoad">
-        <h3 style="color:#a38334;margin-bottom:30px;">若对我们的技术有兴趣，欢迎在此试用！</h3>
+        <h3 style="color: #a38334; margin-bottom: 30px">
+          若对我们的技术有兴趣，欢迎在此试用！
+        </h3>
         <div class="scan" @click="openFileInput">
           <el-icon size="80"><Plus /></el-icon>
           <input
@@ -255,7 +271,7 @@ export default {
     const navigateToHome = () => {
       router.push("/");
     };
-        const navigateToChat = () => {
+    const navigateToChat = () => {
       router.push("/chatView");
     };
     const selectedFile = ref(null);
@@ -275,10 +291,12 @@ export default {
     const handleFileChange = (event) => {
       selectedFile.value = event.target.files[0];
     };
-    
+
     const apiUrl = "";
     const requestData = "";
     const upLoad = () => {
+            showModal.value = true;
+
       if (selectedFile.value) {
         console.log("selectedFile.value", selectedFile.value.name);
         const formData = new FormData();
@@ -296,7 +314,7 @@ export default {
           });
       }
     };
-        const minimize = () => {
+    const minimize = () => {
       // 实现最小化逻辑
       dialogWidth.value = "30%";
       dialogHeight.value = "30%";
@@ -483,6 +501,7 @@ body {
     position: relative;
     overflow: hidden; /* 隐藏溢出的内容 */
     margin-bottom: 10px;
+    justify-content: center;
     .left {
       padding-top: 50px;
       display: flex;
@@ -510,7 +529,6 @@ body {
       z-index: 2;
       width: 619px;
       margin-left: 50px;
-
     }
     .right1 {
       padding-top: 50px;
@@ -519,9 +537,8 @@ body {
       justify-content: center;
       align-items: center;
       margin-left: 160px;
-
     }
-    h4{
+    h4 {
       margin-top: 10px;
     }
     p {
