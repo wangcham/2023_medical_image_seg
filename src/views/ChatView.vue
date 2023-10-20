@@ -79,20 +79,19 @@
         <div class="right">
           <div class="top">
             <div class="des">
-              <h3>病人描述</h3>
+              <h3>病人描述:</h3>
               <text
                 >天天头疼，掉头发,睡不好觉，一直持续很久了，是什么怎么回事呢?
                 ?</text
               >
             </div>
             <div class="info">
-              <h3>病人信息</h3>
+              <h3>病人信息:</h3>
               <text>王白白 男 30岁</text>
             </div>
           </div>
           <div class="mid">
             <div class="doctor">
-              
               <div class="mes">
                 <text>这种症状是什么时候开始的呢? 想服用一些药物吗?</text>
               </div>
@@ -140,7 +139,7 @@ export default {
     };
     const MesList = ref([
       {
-        name: "张三",
+        name: "王白白",
         sex: "男",
         age: "20",
         info: "感冒",
@@ -286,7 +285,7 @@ export default {
 .infoBox {
   display: flex;
   .right {
-    width: 60vw;
+    width: 70vw;
     height: 80vh;
     display: flex;
     flex-direction: column;
@@ -295,12 +294,16 @@ export default {
     .top {
       display: flex;
       flex-direction: column;
-  justify-content: center; 
+      align-items: flex-start;
       .des,
       .info {
         display: flex;
         align-items: center;
         justify-content: space-between;
+        margin-left: 100px;
+        text{
+          margin-left: 20px;
+        }
       }
     }
     .mid {
@@ -315,6 +318,8 @@ export default {
           margin-right: 10px;
           //灰色阴影
           box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+          text-align: left;
+          padding: 10px;
         }
       }
     }
