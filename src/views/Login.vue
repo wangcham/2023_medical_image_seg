@@ -46,7 +46,6 @@
 import router from "@/router";
 import axiosInstance from "@/utils";
 import { defineComponent, reactive } from "vue";
-
 export default defineComponent({
   name: "Login",
   setup() {
@@ -60,15 +59,22 @@ export default defineComponent({
         // 发送请求
         const res = await axiosInstance.post("/doctor_login",formInline);
         // 请求处理成功后
-        if(res){
+        if(res.data.status == 'success'){
           // 保存token
           localStorage.setItem("token",res.data.token);
           // 保存用户名
           localStorage.setItem("username",res.data.username);
+          console.log("接收到的user是"+res.data.username)
+           
+          const user = localStorage.getItem("username")
+          console.log('本地存储的username是'+user)
           // 跳转到首页
           router.push("/");
         }
-        console.log(res);
+        if(res.data.status == 'fail'){
+          console.log(res.data.message)
+          localStorage.removeItem("token")
+        }
       } catch (error) {
         console.log(error);
       }

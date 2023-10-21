@@ -204,6 +204,7 @@
           </p>
         </div>
       </div>
+      <div class="upLoad" v-loading="loading">
       <div class="upLoad">
         <h3 style="color: #a38334; margin-bottom: 30px">
           若对我们的技术有兴趣，欢迎在此试用！
@@ -213,15 +214,17 @@
           <input
             ref="fileInput"
             type="file"
+            accept="image/*"
             class="go-upload-input"
             style="display: none"
             @change="handleFileChange"
           />
         </div>
-        <div class="load" @click="upLoad" :disabled="!selectedFile">
+        <div class="load" @click="upLoad"  :disabled="!selectedFile">
           <h1>上传图像</h1>
         </div>
         <p v-if="selectedFile">已选择文件: {{ selectedFile.name }}</p>
+        <el-button v-if="selectedFile" @click="startSeg" type="primary" size="large">开始分割</el-button>
         <div v-if="uploadProgress !== null">
           <progress :value="uploadProgress" max="100">
             {{ uploadProgress }}%
@@ -233,6 +236,12 @@
       <contact-us></contact-us>
     </el-scrollbar>
   </div>
+  <!--展示分割之后的弹窗-->
+  <el-dialog v-model="showresult" title="分割图像结果">
+  <div style="display: flex; flex-direction: column; align-items: center;">
+    <img :src="segresult" alt="result" style="margin-bottom: 10px;" />
+  </div>
+</el-dialog>
 </template>
 
 <script>
@@ -240,6 +249,10 @@ import ContactUs from "@/components/ContactUs.vue";
 import CaseInfo from "@/components/CaseInfo.vue";
 import { useRoute, useRouter } from "vue-router";
 import { ref, watch } from "vue";
+import { post } from "@/utils";
+import common from '../common/common'
+import axios from 'axios';
+import { ElMessage } from 'element-plus';
 export default {
   name: "ImageCut",
   components: { ContactUs, CaseInfo },
@@ -251,6 +264,8 @@ export default {
     },
   },
   setup() {
+    //flag为上传
+
     const route = useRoute(); // 使用 useRoute 获取当前路由对象
     const router = useRouter(); // 使用 useRouter 获取路由实例
     const navigateToLogin = () => {
@@ -281,6 +296,13 @@ export default {
     const showModal = ref(false);
     const dialogWidth = ref("60%"); // 初始宽度
     const dialogHeight = ref("80%"); // 初始高度
+    //打开分割后的图片详情
+    const showresult = ref(false);
+    const flag = ref(false)
+    const loading = ref(false)
+    const segresult = ref('')
+    const text = ref('')
+    const user = ref('')
 
     const openFileInput = () => {
       const fileInput = document.querySelector('input[type="file"]');
@@ -288,9 +310,18 @@ export default {
         fileInput.click();
       }
     };
+
     const handleFileChange = (event) => {
       selectedFile.value = event.target.files[0];
     };
+    
+    const startSeg = async() => {
+      flag.value = true
+      upLoad()
+    }
+
+    const upLoad = async() => {
+      const formData = new FormData();
 
     const apiUrl = "";
     const requestData = "";
@@ -299,20 +330,46 @@ export default {
 
       if (selectedFile.value) {
         console.log("selectedFile.value", selectedFile.value.name);
-        const formData = new FormData();
-        formData.append("file", selectedFile.value);
-        post(apiUrl, requestData)
-          .then((res) => {
-            console.log("成功响应", res);
-            uploadSuccess.value = "上传成功！";
-            showModal.value = true;
-            // 实际应该是再次请求上传的图片，然后返回分割后的图片
-          })
-          .catch((err) => {
-            console.log("响应失败", err);
-            uploadError.value = "上传失败，请重试！";
-          });
+        formData.append("image", selectedFile.value);
+        const username = localStorage.getItem("username")
+        console.log("这里的username是"+username)
+        //设置匿名用户使用的用户名
+        if (username === null){
+          user.value = 'null'
+        }else{
+          user.value = username
+        }
+
+        formData.append("username",user.value)
       }
+      if(flag.value == true){
+        console.log("前端调用分割功能")
+        try{
+            loading.value = true
+            const res = await axios.post(common.backend_prefix+"/pubfunc",formData,{responseType:'blob'})
+            
+            if(res.data.status == 'fail'){
+              loading.value = false
+              ElMessage.error(res.data.message)
+            }else{
+              loading.value = false
+              let blob  = new Blob([res.data],{type:res.data.type})
+              const url = URL.createObjectURL(blob)
+              segresult.value = url
+              console.log("结果:"+segresult.value)
+              ElMessage.success("分割成功")
+              showresult.value = true
+            }
+          }catch(error){
+            console.log(error)
+            loading.value = false
+          }finally{
+            loading.value = false
+          }
+      }else{
+        console.log("调用startseg功能失败") 
+      }
+
     };
     const minimize = () => {
       // 实现最小化逻辑
@@ -344,6 +401,7 @@ export default {
       minimize,
       maximize,
       close,
+      startSeg,
       showModal,
       dialogWidth,
       dialogHeight,
@@ -351,6 +409,11 @@ export default {
       uploadProgress,
       uploadError,
       uploadSuccess,
+      showresult,
+      loading,
+      segresult,
+      text,
+      user,
     };
   },
 };

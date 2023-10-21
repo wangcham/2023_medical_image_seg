@@ -5,7 +5,7 @@
         <el-col :span="18">
           <div class="grid-content ep-bg-purple" />
         </el-col>
-        <el-col :span="1.5" v-if="true">
+        <el-col :span="1.5" v-if="!checkiflogin">
           <div
             class="login"
             style="display: inline-block; padding-right: 3px"
@@ -17,7 +17,7 @@
           <!--        <div class="register" style="display: inline-block;">注册</div>-->
         </el-col>
         <!--      /*用于当用户完成登录以后进行身份的显示*/-->
-        <el-col :span="1.5" v-if="false">
+        <el-col :span="1.5" v-if="checkiflogin">
           <div class="login" style="display: inline-block; padding-right: 3px">
             {{ loginName }}
           </div>
@@ -229,12 +229,14 @@ export default defineComponent({
       "医学影像诊断是医疗过程中的关键环节，然而，人工解读医学影像存在主观性和时间成本较高的问题。通过自动化的图像处理和准确的分割算法。可以提供一种快速、客观且高效的医学影像诊断辅助工具，有助于克服这些挑战。";
     const ThirdInfo =
       "随着医疗数据的不断积累和数字化转型，数据驱动的医疗趋势日益增强。智慧医疗平台能够处理和分析大规模的医学影像数据，并为医学研究和临床决策提供宝贵的数据支持。这对于医学研究人员、医生和医疗机构来说，具有重要的价值和意义。";
-
+    const checkiflogin = ref(false)
     const fetchData = async () => {
       try {
         const value = await localStorage.getItem("username");
+        console.log("当前用户是"+value)
         if (value) {
           loginName.value = value; // 更新 userName
+          checkiflogin.value = true
         }
       } catch (err) {
         // 当出错时，此处代码运行
@@ -254,6 +256,7 @@ export default defineComponent({
       FirstInfo,
       SecondInfo,
       ThirdInfo,
+      checkiflogin,
       fetchData,
     };
   },

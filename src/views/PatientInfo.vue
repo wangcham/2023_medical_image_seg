@@ -6,6 +6,8 @@
       :height="dialogHeight"
       :before-close="handleClose"
       class="myDialog"
+      destroy-on-close="true"
+      title="查看图像"
     >
       <!-- 右上角的按钮 -->
       <template v-slot:header>
@@ -28,11 +30,21 @@
       </template>
 
       <!-- 弹窗内容放在这里 -->
-      <div class="mySlot" :style="dialogStyle">
+      <div class="mySlot" :style="dialogStyle" >
         <slot>
-          <img src="../assets/mind.jpg" class="dialogImg" />
-          <button @click="cut" class="cutBtn">进行分割</button>
+          <div style="display:flex;flex-direction:row">
+            <img class="dialogImg" :src="oriimage" style="margin-right:10px"/>
+            <img class="dialogImg" v-if="checkifseg" :src="switchseg()" />         
+          </div>
+          <button @click="cut" class="cutBtn" v-if="!checkifseg">进行分割</button>
         </slot>
+        <div style="display: flex; align-items: center;margin-top:20px" v-if="!checkifsend">
+            <el-input text="textarea" v-model="text" placeholder="欢迎点评" style="margin-right: 10px;" />
+            <el-button @click="submittext" type="primary" plain size="medium">  发送点评  </el-button>
+        </div>
+        <div v-if="checkifsend">
+          <p>{{des}}</p>
+        </div>
       </div>
     </el-dialog>
     <el-scrollbar class="myScrollbar" style="height: 100vh">
@@ -124,13 +136,13 @@
               />
             </el-form-item>
             <el-form-item>
-              <el-button type="primary" @click="onSearch" class="searchBtn"
+              <el-button type="primary" @click="fake()" class="searchBtn"
                 >查询</el-button
               >
             </el-form-item>
           </el-form>
         </div>
-        <div class="patientBox">
+        <div class="patientBox" v-loading="loading">
           <el-table
             :data="tableData"
             height="400"
@@ -171,6 +183,8 @@
 </template>
 
 <script lang="ts">
+
+import axios from 'axios';
 import {
   computed,
   watchEffect,
@@ -178,9 +192,11 @@ import {
   defineComponent,
   reactive,
   watch,
+  onMounted,
 } from "vue";
 import contactUs from "@/components/ContactUs.vue";
-import { FormInstance, FormRules, ElMessageBox } from "element-plus";
+import { FormInstance, FormRules, ElMessageBox, ElMessage } from "element-plus";
+import { TreeOptionsEnum } from 'element-plus/es/components/tree-v2/src/virtual-tree';
 
 interface RuleForm {
   name: string;
@@ -194,7 +210,7 @@ interface TableRow {
   age: string;
   doctor: string;
   situation: string;
-  img: string;
+  img:string;
   phone: string;
   status: string;
 }
@@ -205,11 +221,95 @@ export default defineComponent({
     contactUs,
   },
   created() {
-    // this.loginStatus = localStorage.getItem("isLogin") === "true"
+    
+
     console.log("created");
   },
   setup() {
-    const loginStatus = ref(true);
+    //getpatient info
+    onMounted(
+      () =>{
+        getdata();
+        checkiflogin();
+      }
+    );
+    //登陆状态
+    const loginStatus = ref(false)
+    const checkiflogin = () =>{
+      const username = localStorage.getItem("username");
+      if(username){
+        loginStatus.value = true
+      }else{
+        loginStatus.value = false
+      }
+    }
+
+    //send desc
+    const checkifsend = ref(false)
+    const text = ref('')
+    const des = ref('')
+    const submittext = async() =>{
+      const res = await axios.post(backend_prefix+'/senddesc',{desc:text.value,id:nowid.value})
+      if(res.data.status == 'exists'){
+        des.value = res.data.desc
+      }
+      if(res.data.status == 'success'){
+        ElMessage.success("成功发送描述")
+        checkifsend.value = true
+      }else{
+        ElMessage.error(res.data.message)
+        checkifsend.value = true
+      }
+    }
+    const tableData = ref([])
+    const backend_prefix = 'http://localhost:5000'
+    const loading = ref(false)
+    const fake = () =>{
+      ElMessage.error("未查询到结果")
+    }
+    const oriimage = ref('')
+    const segimage = ref('')
+    const seg = ref('')
+    const getdata = async() =>{
+      console.log('调用getdata')
+      try{
+        loading.value  = true
+        const res = await axios.post(backend_prefix+"/getinfo")
+        if(res.data.status == 'fail'){
+          ElMessage.error(res.data.message)
+          loading.value = false
+        }else{
+          console.log('接收成功')
+          const rawData = res.data;
+          console.log(rawData)
+          const tabledata = rawData.map( (item:any) => (
+              {
+                num:item.id,
+                name:item.name,
+                sex:item.sex,
+                age:item.age,
+                doctor:item.doctor,
+                situation:item.status,
+                phone:item.telephone,
+                img:item.id,
+                status:item.surgery,
+              }
+            )
+          );
+          tableData.value = tabledata;
+          loading.value = false;
+        }
+      }catch(error){
+        console.log(error)
+        loading.value = false;
+      }finally{
+        console.log("finally")
+      }
+
+    };
+
+    //结束
+
     // 控制不同情况下，底部ConcatUs组件的样式
     const bottomComponentStyle = computed(() => ({
       position: loginStatus.value ? "sticky" : "relative",
@@ -255,6 +355,8 @@ export default defineComponent({
       ],
       date: [{ required: true, message: "请选择日期", trigger: "blur" }],
     });
+
+    //搜索
     const handleSearch = (newData: {
       name: string;
       date: string;
@@ -262,110 +364,76 @@ export default defineComponent({
     }) => {
       console.log(newData);
       console.log("我被调用啦");
-      // /*递归判断改变的数据，使用name进行查询*/
     };
-    const tableData = [
-      {
-        num: "1",
-        name: "大白菜",
-        sex: "男",
-        age: "18",
-        doctor: "李医生",
-        situation: "脑出血",
-        img: "查看",
-        phone: "12345678910",
-        status: "未手术",
-      },
-      {
-        num: "2",
-        name: "大白菜",
-        sex: "男",
-        age: "18",
-        doctor: "李医生",
-        situation: "脑出血",
-        img: "查看",
-        phone: "12345678910",
-        status: "未手术",
-      },
-      {
-        num: "3",
-        name: "大白菜",
-        sex: "男",
-        age: "18",
-        doctor: "李医生",
-        situation: "脑出血",
-        img: "查看",
-        phone: "12345678910",
-        status: "未手术",
-      },
-      {
-        num: "4",
-        name: "大白菜",
-        sex: "男",
-        age: "18",
-        doctor: "李医生",
-        situation: "脑出血",
-        img: "查看",
-        phone: "12345678910",
-        status: "未手术",
-      },
-      {
-        num: "5",
-        name: "大白菜",
-        sex: "男",
-        age: "18",
-        doctor: "李医生",
-        situation: "脑出血",
-        img: "查看",
-        phone: "12345678910",
-        status: "未手术",
-      },
-      {
-        num: "6",
-        name: "大白菜",
-        sex: "男",
-        age: "18",
-        doctor: "李医生",
-        situation: "脑出血",
-        img: "查看",
-        phone: "12345678910",
-        status: "未手术",
-      },
-      {
-        num: "7",
-        name: "大白菜",
-        sex: "男",
-        age: "18",
-        doctor: "李医生",
-        situation: "脑出血",
-        img: "查看",
-        phone: "12345678910",
-        status: "未手术",
-      },
-      {
-        num: "8",
-        name: "大白菜",
-        sex: "男",
-        age: "18",
-        doctor: "李医生",
-        situation: "脑出血",
-        img: "查看",
-        phone: "12345678910",
-        status: "未手术",
-      },
-    ];
     const showModal = ref(false);
     const dialogWidth = ref("60%"); // 初始宽度
     const dialogHeight = ref("80%"); // 初始高度
-    const handleImageClick = (row: TableRow) => {
-      console.log(row);
-      console.log("old", showModal.value);
+    //
 
-      showModal.value = true;
-      console.log("new", showModal.value);
+    //本质上nowid和imgid都是str类型的后端传来的id值，然后发送时作为username的键值对发送
+    
+    //查看图片
+    const checkifseg = ref(false)
+    const nowid = ref('')
+    const handleImageClick = async(row: TableRow) => {
+      console.log(row);
+      nowid.value = row.num
+      console.log('nowid:'+nowid.value)
+      checkifseg.value = false
+      //在这里发axios请求获得图片
+      try{
+            const formData = new FormData()
+            formData.append("username",nowid.value)
+            const res = await axios.post(backend_prefix+"/get_info_image",formData,{responseType:'blob'})            
+            if(res.data.status == 'fail'){
+              ElMessage.error(res.data.message)
+            }else{
+              let blob  = new Blob([res.data],{type:res.data.type})
+              // const reader = new FileReader()
+              //  reader.onloadend = () => {
+              //   console.log('Reader loaded:', reader.result);
+              //   base64image.value = reader.result ? reader.result.toString() : '';
+              // };
+              // reader.readAsDataURL(blob);
+              const url = URL.createObjectURL(blob);
+              oriimage.value = url;
+              console.log("结果",oriimage.value);
+              
+              showModal.value = true
+            }
+          }catch(error){
+            console.log(error)
+          }finally{
+            console.log("finally")
+          }
+      };
+
+    //分割图片
+    const cut = async() =>{
+      try{
+            ElMessage.warning('图像分割中')
+            const res = await axios.post(backend_prefix+"/getseg",{username:nowid.value},{responseType:'blob'})            
+            if(res.data.status == 'fail'){
+              ElMessage.error(res.data.message)
+            }else{
+              let blob  = new Blob([res.data],{type:res.data.type})
+              const url = URL.createObjectURL(blob)
+              console.log("segimage:",url)
+              segimage.value = url;
+              console.log("获得图片")
+              checkifseg.value = true
+            }
+          }catch(error){
+            console.log(error)
+          }finally{
+            console.log("finally")
+          }
 
     };
-
+      const switchseg = () =>{
+        const url = segimage.value
+        return url
+      }
     const minimize = () => {
       // 实现最小化逻辑
       dialogWidth.value = "30%";
@@ -387,6 +455,7 @@ export default defineComponent({
       dialogHeight.value = "80%"; // 关闭时恢复默认高度
       done();
     };
+    
     watch(
       () => ruleForm,
       (newData, oldData) => {
@@ -412,8 +481,22 @@ export default defineComponent({
       maximize,
       close,
       handleClose,
+      loading,
+      checkifseg,
+      nowid,
+      segimage,
+      oriimage,
+      cut,
+      seg,
+      switchseg,
+      fake,
+      text,
+      submittext,
+      checkifsend,
+      des,
     };
   },
+
   methods: {
     navigateToLogin() {
       this.$router.push("/login");
@@ -439,6 +522,7 @@ export default defineComponent({
     onSearch() {
       console.log("我被查询啦");
       console.log(this.ruleForm);
+      
     },
   },
 });
