@@ -3,6 +3,7 @@ import HomeView from '../views/HomeView.vue'
 import ContactUs from '../components/ContactUs.vue'
 import Login from '../views/Login.vue'
 import CaseInfo from '../components/CaseInfo.vue'
+import ChatView from '../views/ChatView.vue'
 
 const routes : RouteRecordRaw[] = [
   {
@@ -34,6 +35,11 @@ const routes : RouteRecordRaw[] = [
     path: '/ImageCut',
     name: 'ImageCut',
     component: () => import('../views/ImageCut.vue')
+  },
+  {
+    path: '/ChatView',
+    name: 'ChatView',
+    component: () => import('../views/ChatView.vue')
   },
   {
     path: '/login',

@@ -55,7 +55,7 @@
           </div>
           <div class="ep-bg-purple eng">Medical Intelligence</div>
         </el-col>
-        <el-col :span="11">
+        <el-col :span="8">
           <div class="grid-content ep-bg-purple" />
         </el-col>
         <el-col :span="1.5">
@@ -69,6 +69,14 @@
             @click="navigateToPatientInfo"
           >
             病人信息
+          </div>
+        </el-col>
+        <el-col :span="1.5">
+          <div
+            class="grid-content ep-bg-purple nav"
+            @click="navigateToChat"
+          >
+            在线答诊
           </div>
         </el-col>
         <el-col :span="1.5">
@@ -507,6 +515,9 @@ export default defineComponent({
     },
     navigateToHome() {
       this.$router.push("/");
+    },
+    navigateToChat(){
+      this.$router.push("/chatView")
     },
     onSearch() {
       console.log("我被查询啦");

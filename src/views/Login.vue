@@ -7,7 +7,7 @@
           <el-form-item>
             <el-input
               placeholder="请输入手机号码"
-              v-model="formInline.phone"
+              v-model="formInline.phonenummber"
               :style="{ width: '400px' }"
               clearable
             ></el-input>
@@ -50,7 +50,7 @@ export default defineComponent({
   name: "Login",
   setup() {
     const formInline = reactive({
-      phone: "",
+      phonenummber: "",
       password: "",
       // check: "",
     });
@@ -81,7 +81,7 @@ export default defineComponent({
       console.log("submit!");
     };
     const onSent = async () => {
-      console.log("sent!" + formInline.phone);
+      console.log("sent!" + formInline.phonenummber);
     };
     return {
       formInline,
