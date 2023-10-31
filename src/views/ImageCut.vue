@@ -204,7 +204,7 @@
           </p>
         </div>
       </div>
-      <div class="upLoad" v-loading="loading">
+      <div class="upLoad" v-loading="loading"></div>
       <div class="upLoad">
         <h3 style="color: #a38334; margin-bottom: 30px">
           若对我们的技术有兴趣，欢迎在此试用！
@@ -325,7 +325,7 @@ export default {
 
     const apiUrl = "";
     const requestData = "";
-    const upLoad = () => {
+    const upLoad = async() => {
             showModal.value = true;
 
       if (selectedFile.value) {
@@ -415,8 +415,9 @@ export default {
       text,
       user,
     };
-  },
-};
+  }
+}
+}
 </script>
 
 <style lang='less' scoped>
